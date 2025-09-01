@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Heart } from "lucide-react";
+import { Play, Heart, Volume2 } from "lucide-react";
 import familyCelebration from "@/assets/family-diwali-celebration.jpg";
 import kidsCelebration from "@/assets/kids-celebration.jpg";
 import adultCelebration from "@/assets/adult-celebration.jpg";
+import familyVideo from "@/assets/family-diwali-video.jpg";
+import kidsVideo from "@/assets/kids-sparklers-video.jpg";
+import adultVideo from "@/assets/adult-fireworks-video.jpg";
 
-// Mock celebration data
+// Mock celebration data with proper video and GIF assets
 const celebrations = [
   {
     id: 1,
@@ -14,53 +17,78 @@ const celebrations = [
     src: familyCelebration,
     title: "Family Diwali Celebration",
     category: "Family",
-    description: "Joyful family celebrating with sparklers and diyas"
+    description: "Joyful family celebrating with sparklers and diyas",
+    duration: null
   },
   {
     id: 2,
     type: "gif",
     src: kidsCelebration,
     title: "Children's Sparkler Fun",
-    category: "Kids",
-    description: "Kids safely enjoying sparklers with parents"
+    category: "Kids", 
+    description: "Kids safely enjoying sparklers with parents",
+    duration: "5s loop"
   },
   {
     id: 3,
     type: "video",
-    src: familyCelebration,
-    title: "Adult Fireworks Display",
-    category: "Adult",
-    description: "Adults celebrating with premium fireworks"
+    src: familyVideo,
+    title: "Family Diwali Video",
+    category: "Family",
+    description: "Beautiful family celebration with sparklers and diyas",
+    duration: "0:05"
   },
   {
     id: 4,
     type: "gif",
-    src: familyCelebration,
-    title: "Couple's Romantic Celebration",
-    category: "Family",
-    description: "Couple celebrating with beautiful diyas"
+    src: adultCelebration,
+    title: "Adult Fireworks GIF",
+    category: "Adult",
+    description: "Adults celebrating with premium fireworks display",
+    duration: "5s loop"
   },
   {
     id: 5,
-    type: "image",
-    src: kidsCelebration,
-    title: "Grandparents & Grandchildren",
-    category: "Family",
-    description: "Multi-generational Diwali joy"
+    type: "video",
+    src: kidsVideo,
+    title: "Kids Sparkler Video",
+    category: "Kids",
+    description: "Children safely enjoying sparklers with supervision",
+    duration: "0:05"
   },
   {
     id: 6,
     type: "video",
-    src: kidsCelebration,
-    title: "Youth Group Celebration",
+    src: adultVideo,
+    title: "Premium Fireworks Video",
     category: "Adult",
-    description: "Young adults enjoying safe fireworks"
+    description: "Professional fireworks display for adult celebrations",
+    duration: "0:05"
+  },
+  {
+    id: 7,
+    type: "gif",
+    src: familyCelebration,
+    title: "Family Diya Lighting",
+    category: "Family",
+    description: "Traditional diya lighting ceremony",
+    duration: "5s loop"
+  },
+  {
+    id: 8,
+    type: "image",
+    src: adultCelebration,
+    title: "Adult Premium Collection",
+    category: "Adult",
+    description: "Premium crackers for adult celebrations",
+    duration: null
   }
 ];
 
 export const CelebrationGallery = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [playingVideo, setPlayingVideo] = useState<number | null>(null);
 
   const filters = ["All", "Family", "Kids", "Adult"];
 
@@ -74,6 +102,16 @@ export const CelebrationGallery = () => {
         ? prev.filter(fav => fav !== id)
         : [...prev, id]
     );
+  };
+
+  const handleMediaClick = (item: typeof celebrations[0]) => {
+    if (item.type === "video") {
+      setPlayingVideo(playingVideo === item.id ? null : item.id);
+    } else if (item.type === "gif") {
+      // For GIFs, show play animation
+      setPlayingVideo(item.id);
+      setTimeout(() => setPlayingVideo(null), 3000);
+    }
   };
 
   return (
@@ -110,15 +148,36 @@ export const CelebrationGallery = () => {
           {filteredCelebrations.map((item) => (
             <Card key={item.id} className="group relative overflow-hidden bg-white shadow-lg hover:shadow-celebration transition-all duration-300 transform hover:-translate-y-2">
               {/* Image/Video Container */}
-              <div className="relative aspect-video overflow-hidden">
+              <div className="relative aspect-video overflow-hidden cursor-pointer" onClick={() => handleMediaClick(item)}>
                 <img
                   src={item.src}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className={`w-full h-full object-cover transition-transform duration-500 ${
+                    playingVideo === item.id ? 'scale-105' : 'group-hover:scale-110'
+                  }`}
                 />
                 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {/* Playing Animation Overlay */}
+                {playingVideo === item.id && (
+                  <div className="absolute inset-0 bg-black/30 animate-pulse">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {item.type === "video" ? (
+                        <div className="bg-brand-red/90 rounded-full p-6 animate-scale-in">
+                          <Volume2 className="h-12 w-12 text-white" />
+                        </div>
+                      ) : (
+                        <div className="bg-brand-gold/90 rounded-full p-6 animate-scale-in">
+                          <Play className="h-12 w-12 text-black" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Hover Overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${
+                  playingVideo === item.id ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                }`}>
                   {/* Play Button for Videos/GIFs */}
                   {(item.type === "video" || item.type === "gif") && (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -130,7 +189,10 @@ export const CelebrationGallery = () => {
                   
                   {/* Favorite Button */}
                   <button
-                    onClick={() => toggleFavorite(item.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.id);
+                    }}
                     className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm rounded-full p-2 hover:bg-white/30 transition-colors"
                   >
                     <Heart 
@@ -156,6 +218,7 @@ export const CelebrationGallery = () => {
                     } font-medium`}
                   >
                     {item.type.toUpperCase()}
+                    {item.duration && ` ${item.duration}`}
                   </Badge>
                 </div>
               </div>
