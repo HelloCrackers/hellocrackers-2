@@ -1,17 +1,18 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 
 export const StickyOrderButton = () => {
-  const [cartCount] = useState(0);
+  const { getCartCount } = useCart();
   const navigate = useNavigate();
+  const cartCount = getCartCount();
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
       {/* Order Now Button */}
       <Button 
-        onClick={() => navigate('/order')}
+        onClick={() => navigate('/products')}
         className="bg-purple-600 hover:bg-purple-700 text-white shadow-2xl rounded-full px-6 py-4 font-bold text-lg transition-all duration-300 hover:scale-105"
         size="lg"
       >

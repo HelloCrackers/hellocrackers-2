@@ -5,9 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, Play, ShoppingCart, Filter } from "lucide-react";
+import { Star, Play, ShoppingCart } from "lucide-react";
 import { StickyOrderButton } from "@/components/StickyOrderButton";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import crackersDisplay from "@/assets/crackers-display.jpg";
 
 // Mock product data with the exact format requested
@@ -101,8 +112,10 @@ const products = [
 export default function Products() {
   const [activeTab, setActiveTab] = useState("Family Crackers");
   const [quantities, setQuantities] = useState<{[key: string]: string}>({});
-  const [cart, setCart] = useState<{[key: string]: number}>({});
+  const [showMinOrderDialog, setShowMinOrderDialog] = useState(false);
   const navigate = useNavigate();
+  const { addToCart, checkMinimumOrder } = useCart();
+  const { toast } = useToast();
 
   const tabs = ["Family Crackers", "Adult Crackers", "Kids Crackers"];
 
@@ -117,14 +130,31 @@ export default function Products() {
     }));
   };
 
-  const addToCart = (productCode: string) => {
-    const qty = parseInt(quantities[productCode] || "1");
+  const handleAddToCart = (product: typeof products[0]) => {
+    const qty = parseInt(quantities[product.productCode] || "1");
     if (qty > 0) {
-      setCart(prev => ({
+      addToCart({
+        productCode: product.productCode,
+        productName: product.productName,
+        finalRate: product.finalRate,
+        image: product.image,
+        userFor: product.userFor
+      }, qty);
+      
+      // Reset quantity input
+      setQuantities(prev => ({
         ...prev,
-        [productCode]: (prev[productCode] || 0) + qty
+        [product.productCode]: ""
       }));
     }
+  };
+
+  const handleCartClick = () => {
+    if (!checkMinimumOrder()) {
+      setShowMinOrderDialog(true);
+      return;
+    }
+    navigate('/cart');
   };
 
   const getAmount = (finalRate: number, productCode: string) => {
@@ -280,7 +310,7 @@ export default function Products() {
                 <div className="col-span-1">
                   <div className="text-center">
                     <div className="font-bold text-brand-red">₹{getAmount(product.finalRate, product.productCode)}</div>
-                    <Button variant="cart" size="sm" className="mt-2 w-full" onClick={() => navigate('/order')}>
+                    <Button variant="cart" size="sm" className="mt-2 w-full" onClick={() => handleAddToCart(product)}>
                       <ShoppingCart className="h-4 w-4" />
                     </Button>
                   </div>
@@ -348,9 +378,9 @@ export default function Products() {
                        </div>
                       <div className="text-right flex-1">
                         <div className="font-bold text-brand-red text-lg">₹{getAmount(product.finalRate, product.productCode)}</div>
-                        <Button variant="cart" size="sm" className="mt-1" onClick={() => navigate('/order')}>
+                        <Button variant="cart" size="sm" className="mt-1" onClick={() => handleAddToCart(product)}>
                           <ShoppingCart className="h-4 w-4 mr-1" />
-                          Order Now
+                          Add to Cart
                         </Button>
                       </div>
                     </div>
@@ -365,6 +395,26 @@ export default function Products() {
             </Card>
           ))}
         </div>
+
+        {/* Minimum Order Dialog */}
+        <AlertDialog open={showMinOrderDialog} onOpenChange={setShowMinOrderDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-brand-red">Hello Crackers</AlertDialogTitle>
+              <AlertDialogDescription className="text-lg">
+                Dear Customer, the minimum order value is ₹3000. Kindly add more items to proceed with your order.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction
+                onClick={() => setShowMinOrderDialog(false)}
+                className="bg-gradient-festive text-white"
+              >
+                Continue Shopping
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       <Footer />
       <StickyOrderButton />

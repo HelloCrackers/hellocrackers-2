@@ -253,22 +253,24 @@ export const CelebrationGallery = () => {
               View More Celebrations
             </button>
             <div className="text-center">
-              <label htmlFor="user-images" className="bg-gradient-festive text-white px-6 py-2 rounded-full font-medium cursor-pointer hover:opacity-90 transition-opacity shadow-md inline-block">
-                Add Your Celebration Images
+              <p className="text-sm text-gray-500 mb-2">Admin Only: Upload celebration images</p>
+              <label htmlFor="admin-images" className="bg-gradient-festive text-white px-6 py-2 rounded-full font-medium cursor-pointer hover:opacity-90 transition-opacity shadow-md inline-block">
+                Admin: Add Celebration Images
               </label>
               <input
                 type="file"
-                id="user-images"
+                id="admin-images"
                 multiple
                 accept="image/*,video/*"
                 className="hidden"
                 onChange={(e) => {
-                  // Handle file upload
+                  // Admin-only file upload
                   const files = Array.from(e.target.files || []);
-                  console.log("User uploaded files:", files);
+                  console.log("Admin uploaded files:", files);
+                  // In real implementation, check admin authentication
                 }}
               />
-              <p className="text-sm text-gray-500 mt-2">Share your celebration moments with us!</p>
+              <p className="text-xs text-gray-400 mt-2">Note: This feature is restricted to admin users only</p>
             </div>
           </div>
         </div>
