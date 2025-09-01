@@ -98,7 +98,7 @@ const products = [
 
 export default function Products() {
   const [activeTab, setActiveTab] = useState("All");
-  const [quantities, setQuantities] = useState<{[key: string]: number}>({});
+  const [quantities, setQuantities] = useState<{[key: string]: string}>({});
   const [cart, setCart] = useState<{[key: string]: number}>({});
 
   const tabs = ["All", "Family", "Adult", "Kids"];
@@ -107,23 +107,25 @@ export default function Products() {
     product => activeTab === "All" || product.userFor === activeTab
   );
 
-  const updateQuantity = (productCode: string, quantity: number) => {
+  const updateQuantity = (productCode: string, quantity: string) => {
     setQuantities(prev => ({
       ...prev,
-      [productCode]: Math.max(1, quantity)
+      [productCode]: quantity
     }));
   };
 
   const addToCart = (productCode: string) => {
-    const qty = quantities[productCode] || 1;
-    setCart(prev => ({
-      ...prev,
-      [productCode]: (prev[productCode] || 0) + qty
-    }));
+    const qty = parseInt(quantities[productCode] || "1");
+    if (qty > 0) {
+      setCart(prev => ({
+        ...prev,
+        [productCode]: (prev[productCode] || 0) + qty
+      }));
+    }
   };
 
   const getAmount = (finalRate: number, productCode: string) => {
-    const qty = quantities[productCode] || 1;
+    const qty = parseInt(quantities[productCode] || "1");
     return finalRate * qty;
   };
 
@@ -161,8 +163,8 @@ export default function Products() {
 
         {/* Products Grid */}
         <div className="space-y-4">
-          {/* Header Row - Mobile Hidden */}
-          <div className="hidden lg:grid lg:grid-cols-12 gap-4 bg-gradient-celebration text-white p-4 rounded-lg font-semibold text-sm">
+          {/* Header Row - Desktop Only */}
+          <div className="hidden xl:grid xl:grid-cols-12 gap-2 bg-gradient-celebration text-white p-3 rounded-lg font-semibold text-xs">
             <div className="col-span-1">Code</div>
             <div className="col-span-1">Image</div>
             <div className="col-span-1">Video</div>
@@ -174,6 +176,25 @@ export default function Products() {
             <div className="col-span-1">Final Rate (₹)</div>
             <div className="col-span-1">Qty</div>
             <div className="col-span-1">Amount (₹)</div>
+          </div>
+
+          {/* Mobile/Tablet Header - Table Format */}
+          <div className="xl:hidden overflow-x-auto">
+            <div className="min-w-[800px] bg-gradient-celebration text-white p-2 rounded-lg">
+              <div className="grid grid-cols-11 gap-2 font-semibold text-xs">
+                <div>Code</div>
+                <div>Image</div>
+                <div>Video</div>
+                <div>User</div>
+                <div>Product Name</div>
+                <div>Category</div>
+                <div>MRP</div>
+                <div>Disc</div>
+                <div>Rate</div>
+                <div>Qty</div>
+                <div>Amount</div>
+              </div>
+            </div>
           </div>
 
           {/* Product Rows */}
@@ -239,19 +260,19 @@ export default function Products() {
                   <span className="font-bold text-brand-red text-lg">₹{product.finalRate}</span>
                 </div>
                 
-                <div className="col-span-1">
-                  <Input
-                    type="number"
-                    min="1"
-                    value={quantities[product.productCode] || 1}
-                    onChange={(e) => updateQuantity(product.productCode, parseInt(e.target.value) || 1)}
-                    className="w-20 text-center"
-                    placeholder="1"
-                  />
-                  <div className="text-xs text-gray-500 mt-1">
-                    Bulk: 5,10,100
-                  </div>
-                </div>
+                 <div className="col-span-1">
+                   <Input
+                     type="number"
+                     min="1"
+                     value={quantities[product.productCode] || ""}
+                     onChange={(e) => updateQuantity(product.productCode, e.target.value)}
+                     className="w-20 text-center"
+                     placeholder="Qty"
+                   />
+                   <div className="text-xs text-gray-500 mt-1">
+                     Bulk: 5,10,100
+                   </div>
+                 </div>
                 
                 <div className="col-span-1">
                   <div className="text-center">
@@ -308,16 +329,20 @@ export default function Products() {
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">Qty:</span>
-                        <Input
-                          type="number"
-                          min="1"
-                          value={quantities[product.productCode] || 1}
-                          onChange={(e) => updateQuantity(product.productCode, parseInt(e.target.value) || 1)}
-                          className="w-20 text-center"
-                        />
-                      </div>
+                       <div className="flex items-center gap-2">
+                         <span className="text-sm">Qty:</span>
+                         <Input
+                           type="number"
+                           min="1"
+                           value={quantities[product.productCode] || ""}
+                           onChange={(e) => updateQuantity(product.productCode, e.target.value)}
+                           className="w-20 text-center"
+                           placeholder="Qty"
+                         />
+                         <div className="text-xs text-gray-500">
+                           Bulk: 5,10,100
+                         </div>
+                       </div>
                       <div className="text-right flex-1">
                         <div className="font-bold text-brand-red text-lg">₹{getAmount(product.finalRate, product.productCode)}</div>
                         <Button variant="cart" size="sm" className="mt-1" onClick={() => addToCart(product.productCode)}>

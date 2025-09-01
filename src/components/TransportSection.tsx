@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Truck, MapPin, Clock, Shield, Phone } from "lucide-react";
-import logisticsTruck from "@/assets/logistics-truck.jpg";
+import helloCrackersTruck from "@/assets/hello-crackers-truck.jpg";
 
 export const TransportSection = () => {
   return (
@@ -21,7 +21,7 @@ export const TransportSection = () => {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-celebration">
               <img 
-                src={logisticsTruck} 
+                src={helloCrackersTruck} 
                 alt="Hello Crackers Tamil Nadu logistics truck"
                 className="w-full h-[400px] object-cover"
               />
@@ -78,9 +78,9 @@ export const TransportSection = () => {
                   </div>
                   <h3 className="font-semibold text-gray-800">Fast Delivery</h3>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Express delivery within 24-48 hours to ensure fresh crackers for your celebration.
-                </p>
+                 <p className="text-gray-600 text-sm">
+                   Express delivery within 48-60 hours to ensure fresh crackers for your celebration.
+                 </p>
               </Card>
 
               <Card className="p-6 border-l-4 border-l-brand-purple hover:shadow-lg transition-shadow">
@@ -100,10 +100,13 @@ export const TransportSection = () => {
             <Card className="p-6 bg-gradient-to-r from-brand-orange/5 to-brand-red/5 border-brand-orange">
               <h3 className="font-bold text-xl mb-4 text-gray-800">Delivery Information</h3>
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 text-brand-orange" />
-                  <span className="text-gray-700"><strong>Delivery Time:</strong> 24-48 hours within Tamil Nadu</span>
-                </div>
+                 <div className="flex items-center gap-3">
+                   <Clock className="h-4 w-4 text-brand-orange" />
+                   <span className="text-gray-700"><strong>Delivery Time:</strong> 48-60 hours - you will get the parcel at your location</span>
+                 </div>
+                 <div className="bg-brand-red/10 p-3 rounded-lg mt-3">
+                   <p className="text-brand-red font-semibold">📦 Transport charges apply - 48-60 hours delivery guaranteed</p>
+                 </div>
                 <div className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 text-brand-red" />
                   <span className="text-gray-700"><strong>Coverage:</strong> All districts in Tamil Nadu</span>

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Clock, Truck, Shield, Star } from "lucide-react";
-import familyCelebration from "@/assets/family-celebration.jpg";
+import familyCelebration from "@/assets/diwali-family-hero.jpg";
 
 export const HeroSection = () => {
   return (

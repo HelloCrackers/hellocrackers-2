@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Heart } from "lucide-react";
-import familyCelebration from "@/assets/family-celebration.jpg";
+import familyCelebration from "@/assets/diwali-family-hero.jpg";
+import kidsCelebration from "@/assets/kids-sparklers.jpg";
 
 // Mock celebration data
 const celebrations = [
@@ -17,7 +18,7 @@ const celebrations = [
   {
     id: 2,
     type: "gif",
-    src: familyCelebration, // In real app, this would be a GIF
+    src: kidsCelebration,
     title: "Children's Sparkler Fun",
     category: "Kids",
     description: "Kids safely enjoying sparklers with parents"
@@ -41,7 +42,7 @@ const celebrations = [
   {
     id: 5,
     type: "image",
-    src: familyCelebration,
+    src: kidsCelebration,
     title: "Grandparents & Grandchildren",
     category: "Family",
     description: "Multi-generational Diwali joy"
@@ -49,7 +50,7 @@ const celebrations = [
   {
     id: 6,
     type: "video",
-    src: familyCelebration,
+    src: kidsCelebration,
     title: "Youth Group Celebration",
     category: "Adult",
     description: "Young adults enjoying safe fireworks"
