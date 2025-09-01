@@ -52,6 +52,22 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Hello Crackers Brand Colors
+				brand: {
+					red: 'hsl(var(--brand-red))',
+					orange: 'hsl(var(--brand-orange))',
+					gold: 'hsl(var(--brand-gold))',
+					purple: 'hsl(var(--brand-purple))',
+					violet: 'hsl(var(--brand-violet))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

@@ -18,6 +18,13 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Festive variants for Hello Crackers
+        festive: "bg-gradient-festive text-white hover:opacity-90 shadow-festive font-semibold",
+        royal: "bg-gradient-royal text-white hover:opacity-90 shadow-lg font-semibold",
+        celebration: "bg-gradient-celebration text-white hover:opacity-90 shadow-gold font-semibold animate-glow",
+        hero: "bg-gradient-hero text-white hover:opacity-90 shadow-celebration font-bold text-lg",
+        cart: "bg-brand-orange text-white hover:bg-brand-red transition-all duration-300 shadow-lg",
+        premium: "bg-brand-gold text-black hover:bg-brand-gold/90 shadow-gold font-semibold",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -8,6 +8,20 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Hello Crackers Brand Colors */
+    --brand-red: 343 84% 50%;
+    --brand-orange: 25 100% 50%;
+    --brand-gold: 51 100% 50%;
+    --brand-purple: 258 100% 50%;
+    --brand-violet: 271 81% 56%;
+    
+    /* Festive Gradients */
+    --gradient-festive: linear-gradient(135deg, hsl(var(--brand-red)), hsl(var(--brand-orange)));
+    --gradient-royal: linear-gradient(135deg, hsl(var(--brand-purple)), hsl(var(--brand-violet)));
+    --gradient-celebration: linear-gradient(45deg, hsl(var(--brand-gold)), hsl(var(--brand-orange)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--brand-red)) 0%, hsl(var(--brand-orange)) 50%, hsl(var(--brand-gold)) 100%);
+    
+    /* Theme Colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -17,24 +31,35 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: var(--brand-red);
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 25 95% 95%;
+    --secondary-foreground: var(--brand-red);
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: var(--brand-gold);
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 25 50% 90%;
+    --input: 25 50% 95%;
+    --ring: var(--brand-orange);
+    
+    /* Special Elements */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: var(--brand-orange);
+    --warning-foreground: 0 0% 100%;
+    
+    /* Shadows & Effects */
+    --shadow-festive: 0 10px 30px -10px hsl(var(--brand-red) / 0.3);
+    --shadow-gold: 0 0 40px hsl(var(--brand-gold) / 0.4);
+    --shadow-celebration: 0 20px 60px -20px hsl(var(--brand-orange) / 0.5);
 
     --radius: 0.5rem;
 
@@ -102,4 +127,64 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Festive Animation Classes */
+  .animate-sparkle {
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@layer components {
+  /* Festive Gradient Backgrounds */
+  .bg-gradient-festive {
+    background: var(--gradient-festive);
+  }
+  
+  .bg-gradient-royal {
+    background: var(--gradient-royal);
+  }
+  
+  .bg-gradient-celebration {
+    background: var(--gradient-celebration);
+  }
+  
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  /* Festive Shadows */
+  .shadow-festive {
+    box-shadow: var(--shadow-festive);
+  }
+  
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .shadow-celebration {
+    box-shadow: var(--shadow-celebration);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 20px hsl(var(--brand-gold)); }
+  to { text-shadow: 0 0 30px hsl(var(--brand-gold)), 0 0 40px hsl(var(--brand-gold)); }
 }
