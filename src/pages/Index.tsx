@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { CelebrationGallery } from "@/components/CelebrationGallery";
 import { TransportSection } from "@/components/TransportSection";
 import { Footer } from "@/components/Footer";
+import { StickyOrderButton } from "@/components/StickyOrderButton";
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
       <CelebrationGallery />
       <TransportSection />
       <Footer />
+      <StickyOrderButton />
     </div>
   );
 };

@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Star, Play, ShoppingCart, Filter } from "lucide-react";
+import { StickyOrderButton } from "@/components/StickyOrderButton";
+import { useNavigate } from "react-router-dom";
 import crackersDisplay from "@/assets/crackers-display.jpg";
 
 // Mock product data with the exact format requested
@@ -97,14 +99,15 @@ const products = [
 ];
 
 export default function Products() {
-  const [activeTab, setActiveTab] = useState("All");
+  const [activeTab, setActiveTab] = useState("Family Crackers");
   const [quantities, setQuantities] = useState<{[key: string]: string}>({});
   const [cart, setCart] = useState<{[key: string]: number}>({});
+  const navigate = useNavigate();
 
-  const tabs = ["All", "Family", "Adult", "Kids"];
+  const tabs = ["Family Crackers", "Adult Crackers", "Kids Crackers"];
 
   const filteredProducts = products.filter(
-    product => activeTab === "All" || product.userFor === activeTab
+    product => activeTab.includes(product.userFor)
   );
 
   const updateQuantity = (productCode: string, quantity: string) => {
@@ -156,7 +159,7 @@ export default function Products() {
                   : "bg-white text-gray-600 hover:bg-brand-orange hover:text-white shadow-md border"
               }`}
             >
-              {tab} Products
+              {tab}
             </button>
           ))}
         </div>
@@ -277,7 +280,7 @@ export default function Products() {
                 <div className="col-span-1">
                   <div className="text-center">
                     <div className="font-bold text-brand-red">₹{getAmount(product.finalRate, product.productCode)}</div>
-                    <Button variant="cart" size="sm" className="mt-2 w-full" onClick={() => addToCart(product.productCode)}>
+                    <Button variant="cart" size="sm" className="mt-2 w-full" onClick={() => navigate('/order')}>
                       <ShoppingCart className="h-4 w-4" />
                     </Button>
                   </div>
@@ -345,9 +348,9 @@ export default function Products() {
                        </div>
                       <div className="text-right flex-1">
                         <div className="font-bold text-brand-red text-lg">₹{getAmount(product.finalRate, product.productCode)}</div>
-                        <Button variant="cart" size="sm" className="mt-1" onClick={() => addToCart(product.productCode)}>
+                        <Button variant="cart" size="sm" className="mt-1" onClick={() => navigate('/order')}>
                           <ShoppingCart className="h-4 w-4 mr-1" />
-                          Add to Cart
+                          Order Now
                         </Button>
                       </div>
                     </div>
@@ -364,6 +367,7 @@ export default function Products() {
         </div>
       </div>
       <Footer />
+      <StickyOrderButton />
     </div>
   );
 }

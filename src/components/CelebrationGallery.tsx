@@ -248,9 +248,29 @@ export const CelebrationGallery = () => {
 
         {/* View More Button */}
         <div className="text-center mt-12">
-          <button className="bg-gradient-royal text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg">
-            View More Celebrations
-          </button>
+          <div className="space-y-4">
+            <button className="bg-gradient-royal text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity shadow-lg">
+              View More Celebrations
+            </button>
+            <div className="text-center">
+              <label htmlFor="user-images" className="bg-gradient-festive text-white px-6 py-2 rounded-full font-medium cursor-pointer hover:opacity-90 transition-opacity shadow-md inline-block">
+                Add Your Celebration Images
+              </label>
+              <input
+                type="file"
+                id="user-images"
+                multiple
+                accept="image/*,video/*"
+                className="hidden"
+                onChange={(e) => {
+                  // Handle file upload
+                  const files = Array.from(e.target.files || []);
+                  console.log("User uploaded files:", files);
+                }}
+              />
+              <p className="text-sm text-gray-500 mt-2">Share your celebration moments with us!</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -37,22 +37,22 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-brand-red font-medium transition-colors">
+            <Link to="/" className="text-gray-700 hover:text-brand-red font-medium transition-colors" onClick={() => window.scrollTo(0, 0)}>
               Home
             </Link>
-            <Link to="/products" className="text-gray-700 hover:text-brand-red font-medium transition-colors">
+            <Link to="/products" className="text-gray-700 hover:text-brand-red font-medium transition-colors" onClick={() => window.scrollTo(0, 0)}>
               Products
             </Link>
-            <button onClick={() => navigate('/price-list')} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
+            <button onClick={() => {navigate('/price-list'); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
               Price List
             </button>
-            <button onClick={() => navigate('/track-order')} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
+            <button onClick={() => {navigate('/track-order'); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
               Track Order
             </button>
-            <button onClick={() => navigate('/about')} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
+            <button onClick={() => {navigate('/about'); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
               About Us
             </button>
-            <button onClick={() => navigate('/contact')} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
+            <button onClick={() => {navigate('/contact'); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium transition-colors">
               Contact
             </button>
           </nav>
@@ -83,22 +83,22 @@ export const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-brand-orange/20 py-4">
             <nav className="flex flex-col space-y-3">
-              <Link to="/" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={toggleMenu}>
+              <Link to="/" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={() => {toggleMenu(); window.scrollTo(0, 0);}}>
                 Home
               </Link>
-              <Link to="/products" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={toggleMenu}>
+              <Link to="/products" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={() => {toggleMenu(); window.scrollTo(0, 0);}}>
                 Products
               </Link>
-              <button onClick={() => {navigate('/price-list'); toggleMenu();}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/price-list'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
                 Price List
               </button>
-              <button onClick={() => {navigate('/track-order'); toggleMenu();}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/track-order'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
                 Track Order
               </button>
-              <button onClick={() => {navigate('/about'); toggleMenu();}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/about'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
                 About Us
               </button>
-              <button onClick={() => {navigate('/contact'); toggleMenu();}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/contact'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
                 Contact
               </button>
             </nav>
