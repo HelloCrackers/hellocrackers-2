@@ -15,8 +15,14 @@ import {
   Send,
   Truck,
   Shield,
-  Star
+  Star,
+  Instagram,
+  Facebook,
+  Youtube
 } from "lucide-react";
+import FeedbackSystem from "@/components/FeedbackSystem";
+import Map from "@/components/Map";
+import SupremeCourtNotice from "@/components/SupremeCourtNotice";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -43,15 +49,15 @@ const Contact = () => {
     {
       icon: <Phone className="h-6 w-6" />,
       title: "Phone Support",
-      primary: "Toll Free: 1800-XXX-XXXX",
-      secondary: "Local: +91 98765 43210",
+      primary: "+91 9042132123",
+      secondary: "+91 9629088412",
       color: "bg-brand-orange"
     },
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email Support",
-      primary: "orders@hellocrackers.com",
-      secondary: "support@hellocrackers.com",
+      primary: "Hellocrackers.official@gmail.com",
+      secondary: "orders@hellocrackers.com",
       color: "bg-brand-purple"
     },
     {
@@ -267,17 +273,52 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* Map Section */}
+        {/* Social Media Links */}
         <Card className="mt-12 p-6">
-          <h3 className="text-2xl font-bold text-center mb-6">Our Location</h3>
-          <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
-            <div className="text-center text-gray-600">
-              <MapPin className="h-12 w-12 mx-auto mb-2" />
-              <p>Interactive map will be integrated here</p>
-              <p className="text-sm">Showing Hello Crackers outlet locations</p>
-            </div>
+          <h3 className="text-2xl font-bold text-center mb-6">Follow Us on Social Media</h3>
+          <div className="flex justify-center gap-6">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 border-pink-500 text-pink-600 hover:bg-pink-50"
+              onClick={() => window.open('https://instagram.com/Hello_Crackers', '_blank')}
+            >
+              <Instagram className="h-5 w-5" />
+              Instagram
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 border-blue-600 text-blue-600 hover:bg-blue-50"
+              onClick={() => window.open('https://facebook.com/Hello_Crackers', '_blank')}
+            >
+              <Facebook className="h-5 w-5" />
+              Facebook
+            </Button>
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 border-red-600 text-red-600 hover:bg-red-50"
+              onClick={() => window.open('https://youtube.com/Hello_Crackers', '_blank')}
+            >
+              <Youtube className="h-5 w-5" />
+              YouTube
+            </Button>
           </div>
         </Card>
+
+        {/* Supreme Court Notice */}
+        <div className="mt-12">
+          <SupremeCourtNotice />
+        </div>
+
+        {/* Map Section */}
+        <Card className="mt-12 p-6">
+          <h3 className="text-2xl font-bold text-center mb-6">Our Store Location</h3>
+          <Map />
+        </Card>
+
+        {/* Customer Feedback */}
+        <div className="mt-12">
+          <FeedbackSystem />
+        </div>
       </main>
 
       <Footer />

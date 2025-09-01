@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Settings, Package, Truck, Bell, Users, FileText, Eye } from "lucide-react";
+import { Upload, Settings, Package, Truck, Bell, Users, FileText, Eye, User, Shield, Phone, Mail } from "lucide-react";
 
 export default function Admin() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -29,13 +29,14 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="transport">Transport</TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="users">Admin Users</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -254,6 +255,156 @@ export default function Admin() {
                     <Bell className="h-4 w-4 mr-2" />
                     Upload Notice
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Admin Users Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Admin User Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Current Admin Users */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Current Admin Users</h3>
+                    <div className="space-y-4">
+                      {/* Admin User 1 */}
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-brand-orange/10 rounded-full p-2">
+                              <User className="h-5 w-5 text-brand-orange" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold">Super Admin</h4>
+                              <p className="text-sm text-gray-600">admin@hellocrackers.com</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Phone className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600">+91 9042132123</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-green-100 text-green-700">Active</Badge>
+                            <Badge className="bg-brand-orange text-white">Super Admin</Badge>
+                          </div>
+                        </div>
+                      </Card>
+
+                      {/* Admin User 2 */}
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-brand-purple/10 rounded-full p-2">
+                              <User className="h-5 w-5 text-brand-purple" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold">Store Manager</h4>
+                              <p className="text-sm text-gray-600">manager@hellocrackers.com</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Phone className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600">+91 9629088412</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-green-100 text-green-700">Active</Badge>
+                            <Badge className="bg-brand-purple text-white">Manager</Badge>
+                          </div>
+                        </div>
+                      </Card>
+
+                      {/* Admin User 3 */}
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-brand-gold/10 rounded-full p-2">
+                              <User className="h-5 w-5 text-brand-gold/80" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold">Content Admin</h4>
+                              <p className="text-sm text-gray-600">content@hellocrackers.com</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Mail className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600">Hellocrackers.official@gmail.com</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-green-100 text-green-700">Active</Badge>
+                            <Badge className="bg-brand-gold/80 text-white">Editor</Badge>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Add New Admin */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Add New Admin User</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="admin-name">Full Name</Label>
+                        <Input id="admin-name" placeholder="Enter admin name" />
+                      </div>
+                      <div>
+                        <Label htmlFor="admin-email">Email Address</Label>
+                        <Input id="admin-email" type="email" placeholder="admin@hellocrackers.com" />
+                      </div>
+                      <div>
+                        <Label htmlFor="admin-phone">Phone Number</Label>
+                        <Input id="admin-phone" type="tel" placeholder="+91 98765 43210" />
+                      </div>
+                      <div>
+                        <Label htmlFor="admin-role">Role</Label>
+                        <select id="admin-role" className="w-full p-2 border rounded">
+                          <option value="editor">Editor</option>
+                          <option value="manager">Manager</option>
+                          <option value="admin">Admin</option>
+                          <option value="super-admin">Super Admin</option>
+                        </select>
+                      </div>
+                    </div>
+                    <Button className="mt-4">
+                      <User className="h-4 w-4 mr-2" />
+                      Add Admin User
+                    </Button>
+                  </div>
+
+                  {/* Permissions */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Role Permissions</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Card className="p-4">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <Shield className="h-4 w-4" />
+                          Manager Permissions
+                        </h4>
+                        <ul className="text-sm space-y-1 text-gray-600">
+                          <li>• View and manage orders</li>
+                          <li>• Update transport information</li>
+                          <li>• Manage product inventory</li>
+                          <li>• View customer feedback</li>
+                        </ul>
+                      </Card>
+                      <Card className="p-4">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <Shield className="h-4 w-4" />
+                          Editor Permissions
+                        </h4>
+                        <ul className="text-sm space-y-1 text-gray-600">
+                          <li>• Update website content</li>
+                          <li>• Manage media uploads</li>
+                          <li>• Edit product descriptions</li>
+                          <li>• Respond to customer queries</li>
+                        </ul>
+                      </Card>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
