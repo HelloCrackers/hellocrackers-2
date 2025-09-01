@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Heart } from "lucide-react";
-import familyCelebration from "@/assets/diwali-family-hero.jpg";
-import kidsCelebration from "@/assets/kids-sparklers.jpg";
+import familyCelebration from "@/assets/family-diwali-celebration.jpg";
+import kidsCelebration from "@/assets/kids-celebration.jpg";
+import adultCelebration from "@/assets/adult-celebration.jpg";
 
 // Mock celebration data
 const celebrations = [
