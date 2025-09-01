@@ -25,13 +25,16 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
+  console.log('useCart called, context:', context);
   if (!context) {
+    console.error('CartContext is undefined - useCart must be used within a CartProvider');
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
 };
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  console.log('CartProvider rendering with children:', !!children);
   const [cart, setCart] = useState<CartItem[]>([]);
   const { toast } = useToast();
 
