@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Truck, MapPin, Clock, Shield, Phone } from "lucide-react";
-import helloCrackersTruck from "@/assets/hello-crackers-truck.jpg";
+import helloCrackersTruck from "@/assets/hello-crackers-transport-branded.jpg";
 
 export const TransportSection = () => {
   return (
