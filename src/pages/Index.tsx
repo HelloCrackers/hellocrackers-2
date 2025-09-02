@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { CelebrationGallery } from "@/components/CelebrationGallery";
 import { TransportSection } from "@/components/TransportSection";
+import { GiftBoxSection } from "@/components/GiftBoxSection";
 import { Footer } from "@/components/Footer";
 import { StickyOrderButton } from "@/components/StickyOrderButton";
 
@@ -19,6 +20,7 @@ const Index = () => {
       </div>
       <HeroSection />
       <CelebrationGallery />
+      <GiftBoxSection />
       <TransportSection />
       <Footer />
       <StickyOrderButton />

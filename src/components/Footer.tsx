@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Clock, Shield, Star } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Shield, Star, Facebook, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Footer = () => {
@@ -80,12 +80,12 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter */}
+        {/* Newsletter & Social Media */}
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="text-center">
             <h4 className="text-xl font-semibold mb-3">Stay Updated with Latest Offers</h4>
             <p className="text-gray-300 mb-4">Get notified about new arrivals and exclusive discounts</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
               <input 
                 type="email" 
                 placeholder="Enter your email"
@@ -94,6 +94,34 @@ export const Footer = () => {
               <Button variant="festive" className="px-6">
                 Subscribe
               </Button>
+            </div>
+            
+            {/* Social Media Links */}
+            <div className="flex justify-center gap-4">
+              <a 
+                href="https://facebook.com/hellocrackers" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+              >
+                <Facebook className="h-5 w-5 text-white" />
+              </a>
+              <a 
+                href="https://instagram.com/hellocrackers" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full transition-colors"
+              >
+                <Instagram className="h-5 w-5 text-white" />
+              </a>
+              <a 
+                href="https://youtube.com/@hellocrackers" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
+              >
+                <Youtube className="h-5 w-5 text-white" />
+              </a>
             </div>
           </div>
         </div>
@@ -110,6 +138,8 @@ export const Footer = () => {
               <a href="/privacy" className="text-gray-400 hover:text-brand-orange text-sm transition-colors">Privacy Policy</a>
               <a href="/terms" className="text-gray-400 hover:text-brand-orange text-sm transition-colors">Terms & Conditions</a>
               <a href="/supreme-court" className="text-gray-400 hover:text-brand-orange text-sm transition-colors">SC Compliance</a>
+              <span className="text-gray-400">|</span>
+              <span className="text-gray-400 text-sm">Cancellation Charges: 70%</span>
             </div>
           </div>
         </div>

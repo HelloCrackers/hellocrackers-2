@@ -1,441 +1,602 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Settings, Package, Truck, Bell, Users, FileText, Eye, User, Shield, Phone, Mail } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  BarChart,
+  Users,
+  Package,
+  ShoppingCart,
+  Download,
+  Edit,
+  Trash2,
+  Plus,
+  FileText,
+  Eye,
+  DollarSign
+} from "lucide-react";
+import { Navigate } from "react-router-dom";
 
 export default function Admin() {
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const { user, isAdmin } = useAuth();
+  const { toast } = useToast();
+  
+  // Mock data - replace with real API calls
+  const [stats] = useState({
+    totalRevenue: 50000,
+    totalOrders: 1,
+    activeProducts: 190,
+    totalCustomers: 4,
+    conversionRate: 25.00,
+    avgOrderValue: 2300,
+    returnCustomers: 0,
+    growthRate: 0
+  });
+
+  const [orders] = useState([
+    {
+      id: "#4",
+      customer: "Iyappan K",
+      items: 1,
+      total: 23,
+      status: "CONFIRMED",
+      date: "27/08/2025",
+      payment: "online",
+      paymentId: "pay_RARckpW2Hr5tE"
+    }
+  ]);
+
+  const [customers] = useState([
+    {
+      name: "Skcrackers",
+      email: "skcracker.official@gmail.com",
+      phone: "9042191018",
+      orders: 0,
+      totalSpent: 0,
+      status: "Active",
+      joinDate: "10/08/2025"
+    },
+    {
+      name: "Iyappan K",
+      email: "iyappanvicky7@gmail.com",
+      phone: "7397326983",
+      orders: 1,
+      totalSpent: 23,
+      status: "Active",
+      joinDate: "10/08/2025",
+      lastOrder: "27/08/2025"
+    },
+    {
+      name: "Kaviya",
+      email: "satheeshkumar22june@gmail.com",
+      phone: "9042132123",
+      orders: 0,
+      totalSpent: 0,
+      status: "Active",
+      joinDate: "12/08/2025"
+    },
+    {
+      name: "8925916760",
+      email: "satheeshkumarb@nibavlifts.com",
+      phone: "+918925916760",
+      orders: 0,
+      totalSpent: 0,
+      status: "Active",
+      joinDate: "25/08/2025"
+    }
+  ]);
+
+  const [products] = useState([
+    {
+      id: 1,
+      image: "/placeholder.svg",
+      name: "Kuruvi",
+      category: "Adults",
+      basePrice: 65,
+      discount: 90,
+      actualPrice: 6.5,
+      stock: 999990,
+      sales: 0,
+      rating: 5,
+      status: "FALSE"
+    },
+    {
+      id: 2,
+      image: "/placeholder.svg",
+      name: "Lakshmi",
+      category: "Adults",
+      basePrice: 150,
+      discount: 90,
+      actualPrice: 15,
+      stock: 999994,
+      sales: 0,
+      rating: 1,
+      status: "FALSE"
+    }
+  ]);
+
+  if (!user || !isAdmin) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  const exportToExcel = (data: any[], filename: string) => {
+    toast({
+      title: "Export Started",
+      description: `Exporting ${filename} to Excel format...`,
+    });
+    // Implement Excel export logic here
+  };
+
+  const exportToPDF = (data: any[], filename: string) => {
+    toast({
+      title: "Export Started",
+      description: `Exporting ${filename} to PDF format...`,
+    });
+    // Implement PDF export logic here
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Admin Header */}
-      <section className="bg-gradient-festive text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-white/90">Manage Hello Crackers Platform</p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Welcome back, {user.name}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => exportToExcel(orders, "orders")} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export Excel
+            </Button>
+            <Button onClick={() => exportToPDF(orders, "orders")} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
           </div>
         </div>
-      </section>
 
-      <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="transport">Transport</TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="users">Admin Users</TabsTrigger>
+            <TabsTrigger value="customers">Customers</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
-          {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid md:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">1,234</div>
-                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-                </CardContent>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Revenue</p>
+                    <p className="text-2xl font-bold">₹{stats.totalRevenue.toLocaleString()}</p>
+                    <p className="text-sm text-green-600">+0%</p>
+                  </div>
+                  <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-green-600" />
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Products</CardTitle>
-                  <Settings className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">456</div>
-                  <p className="text-xs text-muted-foreground">+12 new this week</p>
-                </CardContent>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Orders</p>
+                    <p className="text-2xl font-bold">{stats.totalOrders}</p>
+                    <p className="text-sm text-green-600">+8%</p>
+                  </div>
+                  <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <ShoppingCart className="h-6 w-6 text-blue-600" />
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">₹2,45,678</div>
-                  <p className="text-xs text-muted-foreground">+15.3% from last month</p>
-                </CardContent>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Active Products</p>
+                    <p className="text-2xl font-bold">{stats.activeProducts}</p>
+                    <p className="text-sm text-green-600">+3%</p>
+                  </div>
+                  <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <Package className="h-6 w-6 text-purple-600" />
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Customers</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">890</div>
-                  <p className="text-xs text-muted-foreground">+45 new customers</p>
-                </CardContent>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Customers</p>
+                    <p className="text-2xl font-bold">{stats.totalCustomers}</p>
+                    <p className="text-sm text-green-600">+15%</p>
+                  </div>
+                  <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Users className="h-6 w-6 text-orange-600" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Additional Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="p-6 text-center">
+                <BarChart className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+                <h3 className="font-semibold mb-2">Conversion Rate</h3>
+                <p className="text-2xl font-bold text-blue-600">{stats.conversionRate}%</p>
+              </Card>
+
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Avg Order Value</h3>
+                <p className="text-2xl font-bold text-green-600">₹{stats.avgOrderValue}</p>
+              </Card>
+
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Users className="h-6 w-6 text-purple-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Return Customers</h3>
+                <p className="text-2xl font-bold text-purple-600">{stats.returnCustomers}%</p>
+              </Card>
+
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                  <BarChart className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Growth Rate</h3>
+                <p className="text-2xl font-bold text-red-600">+{stats.growthRate}%</p>
+              </Card>
+            </div>
+
+            {/* Recent Orders */}
+            <Card className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Recent Orders</h3>
+                <Button variant="outline" size="sm">View All</Button>
+              </div>
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <div key={order.id} className="flex justify-between items-center p-4 border rounded">
+                    <div>
+                      <p className="font-semibold">{order.id}</p>
+                      <p className="text-sm text-muted-foreground">{order.customer}</p>
+                      <p className="text-sm text-muted-foreground">{order.date}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">₹{order.total}</p>
+                      <Badge className="bg-green-100 text-green-800">{order.status}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="products" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Product Management</h2>
+              <div className="flex gap-2">
+                <Button onClick={() => exportToExcel(products, "products")} variant="outline">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Products
+                </Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add New Product
+                </Button>
+              </div>
+            </div>
+
+            <Card className="p-6">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-4">Image</th>
+                      <th className="text-left p-4">Product Details</th>
+                      <th className="text-left p-4">Category</th>
+                      <th className="text-left p-4">Base Price</th>
+                      <th className="text-left p-4">Discount %</th>
+                      <th className="text-left p-4">Actual Price</th>
+                      <th className="text-left p-4">Stock</th>
+                      <th className="text-left p-4">Performance</th>
+                      <th className="text-left p-4">Status</th>
+                      <th className="text-left p-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product) => (
+                      <tr key={product.id} className="border-b">
+                        <td className="p-4">
+                          <img src={product.image} alt={product.name} className="w-12 h-12 rounded object-cover" />
+                        </td>
+                        <td className="p-4">
+                          <div>
+                            <p className="font-semibold">{product.name}</p>
+                            <p className="text-sm text-muted-foreground">Single Sound Crackers</p>
+                          </div>
+                        </td>
+                        <td className="p-4">{product.category}</td>
+                        <td className="p-4">₹{product.basePrice}</td>
+                        <td className="p-4">{product.discount}%</td>
+                        <td className="p-4">₹{product.actualPrice}</td>
+                        <td className="p-4 text-green-600">{product.stock.toLocaleString()}</td>
+                        <td className="p-4">
+                          <div>
+                            <p className="text-sm">Sales: {product.sales}</p>
+                            <div className="flex items-center">
+                              <span className="text-yellow-500">★</span>
+                              <span className="ml-1">{product.rating}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <Badge variant={product.status === "TRUE" ? "default" : "secondary"}>
+                            {product.status}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="orders" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Order Management</h2>
+              <div className="flex gap-2">
+                <Button variant="outline">
+                  Filter Orders
+                </Button>
+                <Button onClick={() => exportToExcel(orders, "orders")} variant="outline">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Orders
+                </Button>
+              </div>
+            </div>
+
+            <Card className="p-6">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-4">Order ID</th>
+                      <th className="text-left p-4">Customer</th>
+                      <th className="text-left p-4">Items</th>
+                      <th className="text-left p-4">Total</th>
+                      <th className="text-left p-4">Payment</th>
+                      <th className="text-left p-4">Status</th>
+                      <th className="text-left p-4">Courier</th>
+                      <th className="text-left p-4">Date</th>
+                      <th className="text-left p-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order.id} className="border-b">
+                        <td className="p-4 font-semibold">{order.id}</td>
+                        <td className="p-4">
+                          <div>
+                            <p className="font-semibold">{order.customer}</p>
+                            <p className="text-sm text-muted-foreground">7397326983</p>
+                          </div>
+                        </td>
+                        <td className="p-4">{order.items} Items</td>
+                        <td className="p-4">₹{order.total}</td>
+                        <td className="p-4">
+                          <div>
+                            <Badge className="bg-green-100 text-green-800 mb-1">online</Badge>
+                            <p className="text-xs text-muted-foreground">{order.paymentId}</p>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <Badge className="bg-green-100 text-green-800">{order.status}</Badge>
+                        </td>
+                        <td className="p-4">-</td>
+                        <td className="p-4">{order.date}</td>
+                        <td className="p-4">
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              Order...
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="customers" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Customer Management</h2>
+              <div className="flex gap-2">
+                <Button variant="outline">
+                  Search Customers
+                </Button>
+                <Button onClick={() => exportToExcel(customers, "customers")} variant="outline">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Customers
+                </Button>
+              </div>
+            </div>
+
+            <Card className="p-6">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-4">Customer</th>
+                      <th className="text-left p-4">Contact</th>
+                      <th className="text-left p-4">Orders</th>
+                      <th className="text-left p-4">Total Spent</th>
+                      <th className="text-left p-4">Last Order</th>
+                      <th className="text-left p-4">Status</th>
+                      <th className="text-left p-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {customers.map((customer, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="p-4">
+                          <div>
+                            <p className="font-semibold">{customer.name}</p>
+                            <p className="text-sm text-muted-foreground">Joined {customer.joinDate}</p>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div>
+                            <p className="text-sm">{customer.email}</p>
+                            <p className="text-sm text-muted-foreground">{customer.phone}</p>
+                          </div>
+                        </td>
+                        <td className="p-4">{customer.orders}</td>
+                        <td className="p-4">₹{customer.totalSpent}</td>
+                        <td className="p-4">{customer.lastOrder || "-"}</td>
+                        <td className="p-4">
+                          <Badge className="bg-green-100 text-green-800">{customer.status}</Badge>
+                        </td>
+                        <td className="p-4">
+                          <Button size="sm" variant="outline">
+                            <Eye className="h-4 w-4 mr-2" />
+                            View
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="categories" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Category Management</h2>
+              <div className="flex gap-2">
+                <Button variant="outline">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Categories
+                </Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add New Category
+                </Button>
+              </div>
+            </div>
+
+            {/* Category Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Package className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Total Categories</h3>
+                <p className="text-2xl font-bold text-blue-600">6</p>
+              </Card>
+
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                  <Package className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Active Categories</h3>
+                <p className="text-2xl font-bold text-green-600">4</p>
+              </Card>
+
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Package className="h-6 w-6 text-purple-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Total Products</h3>
+                <p className="text-2xl font-bold text-purple-600">190</p>
+              </Card>
+
+              <Card className="p-6 text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Package className="h-6 w-6 text-orange-600" />
+                </div>
+                <h3 className="font-semibold mb-2">Most Popular</h3>
+                <p className="text-lg font-bold text-orange-600">Master</p>
               </Card>
             </div>
           </TabsContent>
 
-          {/* Products Tab */}
-          <TabsContent value="products" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Bulk Product Upload</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="excel-upload">Upload Excel File</Label>
-                  <Input id="excel-upload" type="file" accept=".xlsx,.xls" />
-                  <p className="text-sm text-gray-600 mt-1">
-                    Format: Product Code, Name, User For, Category, MRP, Discount, Final Rate, Quantity
-                  </p>
-                </div>
-                <Button className="w-full">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Products
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Category Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {["Family", "Adult", "Kids", "Fancy Crackers", "Sparklers", "Bijili Crackers"].map((category) => (
-                    <Badge key={category} variant="outline" className="cursor-pointer">
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-                <Button className="mt-4">Add New Category</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <TabsContent value="settings" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Settings</h2>
+            </div>
 
-          {/* Media Tab */}
-          <TabsContent value="media" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Media Upload</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="media-zip">Upload Media ZIP</Label>
-                  <Input id="media-zip" type="file" accept=".zip" />
-                  <p className="text-sm text-gray-600 mt-1">
-                    Include images and videos named by Product Code (e.g., H001.jpg, H001.mp4)
-                  </p>
-                </div>
-                <Button className="w-full">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Media Files
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Orders</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Order ID</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>#12345</TableCell>
-                      <TableCell>John Doe</TableCell>
-                      <TableCell>₹1,250</TableCell>
-                      <TableCell>
-                        <Badge>Paid</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="outline">
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Transport Tab */}
-          <TabsContent value="transport" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Transport Management</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="courier">Courier Partner</Label>
-                    <Input id="courier" placeholder="Enter courier name" />
-                  </div>
-                  <div>
-                    <Label htmlFor="vehicle">Vehicle Number</Label>
-                    <Input id="vehicle" placeholder="TN XX XX XXXX" />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="status">Delivery Status</Label>
-                  <select className="w-full p-2 border rounded">
-                    <option>Packed</option>
-                    <option>Shipped</option>
-                    <option>Out for Delivery</option>
-                    <option>Delivered</option>
-                  </select>
-                </div>
-                <Button>Update Transport Info</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Content Tab */}
-          <TabsContent value="content" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Content Management</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="hero-text">Hero Section Text</Label>
-                  <Input id="hero-text" defaultValue="Direct Factory Outlet – Celebrate with 90% OFF" />
-                </div>
-                <div>
-                  <Label htmlFor="offer-text">Offer Banner</Label>
-                  <Input id="offer-text" defaultValue="90% OFF on All Products" />
-                </div>
-                <div>
-                  <Label htmlFor="transport-text">Transport Message</Label>
-                  <Input id="transport-text" defaultValue="Free Transport delivery to you at your location" />
-                </div>
-                <Button>Update Content</Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Supreme Court Notifications</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Store Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="sc-upload">Upload SC Notice PDF</Label>
-                    <Input id="sc-upload" type="file" accept=".pdf" />
+                    <Label htmlFor="storeName">Store Name</Label>
+                    <Input id="storeName" defaultValue="SK Crackers" />
                   </div>
-                  <Button>
-                    <Bell className="h-4 w-4 mr-2" />
-                    Upload Notice
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Admin Users Tab */}
-          <TabsContent value="users" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Admin User Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Current Admin Users */}
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Current Admin Users</h3>
-                    <div className="space-y-4">
-                      {/* Admin User 1 */}
-                      <Card className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="bg-brand-orange/10 rounded-full p-2">
-                              <User className="h-5 w-5 text-brand-orange" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold">Super Admin</h4>
-                              <p className="text-sm text-gray-600">admin@hellocrackers.com</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Phone className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">+91 9042132123</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className="bg-green-100 text-green-700">Active</Badge>
-                            <Badge className="bg-brand-orange text-white">Super Admin</Badge>
-                          </div>
-                        </div>
-                      </Card>
-
-                      {/* Admin User 2 */}
-                      <Card className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="bg-brand-purple/10 rounded-full p-2">
-                              <User className="h-5 w-5 text-brand-purple" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold">Store Manager</h4>
-                              <p className="text-sm text-gray-600">manager@hellocrackers.com</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Phone className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">+91 9629088412</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className="bg-green-100 text-green-700">Active</Badge>
-                            <Badge className="bg-brand-purple text-white">Manager</Badge>
-                          </div>
-                        </div>
-                      </Card>
-
-                      {/* Admin User 3 */}
-                      <Card className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="bg-brand-gold/10 rounded-full p-2">
-                              <User className="h-5 w-5 text-brand-gold/80" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold">Content Admin</h4>
-                              <p className="text-sm text-gray-600">content@hellocrackers.com</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Mail className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">Hellocrackers.official@gmail.com</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className="bg-green-100 text-green-700">Active</Badge>
-                            <Badge className="bg-brand-gold/80 text-white">Editor</Badge>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
+                    <Label htmlFor="contactEmail">Contact Email</Label>
+                    <Input id="contactEmail" defaultValue="skcrackers.official@gmail.com" />
                   </div>
-
-                  {/* Add New Admin */}
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Add New Admin User</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="admin-name">Full Name</Label>
-                        <Input id="admin-name" placeholder="Enter admin name" />
-                      </div>
-                      <div>
-                        <Label htmlFor="admin-email">Email Address</Label>
-                        <Input id="admin-email" type="email" placeholder="admin@hellocrackers.com" />
-                      </div>
-                      <div>
-                        <Label htmlFor="admin-phone">Phone Number</Label>
-                        <Input id="admin-phone" type="tel" placeholder="+91 98765 43210" />
-                      </div>
-                      <div>
-                        <Label htmlFor="admin-role">Role</Label>
-                        <select id="admin-role" className="w-full p-2 border rounded">
-                          <option value="editor">Editor</option>
-                          <option value="manager">Manager</option>
-                          <option value="admin">Admin</option>
-                          <option value="super-admin">Super Admin</option>
-                        </select>
-                      </div>
-                    </div>
-                    <Button className="mt-4">
-                      <User className="h-4 w-4 mr-2" />
-                      Add Admin User
-                    </Button>
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input id="phoneNumber" defaultValue="+91 99421 91018" />
                   </div>
-
-                  {/* Permissions */}
+                </div>
+                <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Role Permissions</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card className="p-4">
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                          <Shield className="h-4 w-4" />
-                          Manager Permissions
-                        </h4>
-                        <ul className="text-sm space-y-1 text-gray-600">
-                          <li>• View and manage orders</li>
-                          <li>• Update transport information</li>
-                          <li>• Manage product inventory</li>
-                          <li>• View customer feedback</li>
-                        </ul>
-                      </Card>
-                      <Card className="p-4">
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                          <Shield className="h-4 w-4" />
-                          Editor Permissions
-                        </h4>
-                        <ul className="text-sm space-y-1 text-gray-600">
-                          <li>• Update website content</li>
-                          <li>• Manage media uploads</li>
-                          <li>• Edit product descriptions</li>
-                          <li>• Respond to customer queries</li>
-                        </ul>
-                      </Card>
-                    </div>
+                    <Label htmlFor="storeAddress">Store Address</Label>
+                    <Textarea id="storeAddress" defaultValue="Sivakasi" />
+                  </div>
+                  <div>
+                    <Label htmlFor="freeDelivery">Free delivery Amount*</Label>
+                    <Input id="freeDelivery" defaultValue="500" />
+                  </div>
+                  <div>
+                    <Label htmlFor="youtubeLink">Youtube Link*</Label>
+                    <Input id="youtubeLink" defaultValue="https://" />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Platform Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label>90% OFF Sale Toggle</Label>
-                  <input type="checkbox" defaultChecked className="toggle" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>Free Delivery Toggle</Label>
-                  <input type="checkbox" defaultChecked className="toggle" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>New User Registration</Label>
-                  <input type="checkbox" defaultChecked className="toggle" />
-                </div>
-                <Button>Save Settings</Button>
-              </CardContent>
+              </div>
+              <Button className="mt-6">Save Settings</Button>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
-      
+
       <Footer />
     </div>
   );

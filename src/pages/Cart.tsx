@@ -157,11 +157,22 @@ export default function Cart() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card className="p-6 sticky top-4">
+              <div className="bg-gradient-festive text-white p-4 rounded-lg mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold">Total Items:</span>
+                  <span className="text-xl font-bold">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold">Total Price:</span>
+                  <span className="text-2xl font-bold">₹{cartTotal.toLocaleString()}</span>
+                </div>
+              </div>
+              
               <h3 className="text-xl font-bold mb-4">Order Summary</h3>
               
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between">
-                  <span>Items ({cart.reduce((sum, item) => sum + item.quantity, 0)})</span>
+                  <span>Subtotal</span>
                   <span>₹{cartTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
