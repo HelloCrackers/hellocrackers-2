@@ -71,13 +71,6 @@ export const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/contact')}
-            >
-              Contact Us
-            </Button>
-
             {/* Cart Button with Count */}
             <Button
               variant="outline"

@@ -188,3 +188,29 @@ All colors MUST be HSL.
   from { text-shadow: 0 0 20px hsl(var(--brand-gold)); }
   to { text-shadow: 0 0 30px hsl(var(--brand-gold)), 0 0 40px hsl(var(--brand-gold)); }
 }
+
+/* Mobile responsive image utilities */
+.hero-image-responsive {
+  height: 60vh;
+  object-fit: cover;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .hero-image-responsive {
+    height: 500px;
+  }
+}
+
+/* Mobile container optimization */
+.mobile-container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 640px) {
+  .mobile-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}

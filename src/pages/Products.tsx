@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import crackersDisplay from "@/assets/crackers-display.jpg";
+import helloCrackersBranded from "@/assets/hello-crackers-branded.png";
 
 // Mock product data with the exact format requested
 const products = [
@@ -166,12 +167,21 @@ export default function Products() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Page Header */}
-      <section className="bg-gradient-festive text-white py-12">
+      {/* Hero Image Section */}
+      <section className="bg-gradient-festive text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Premium Crackers Collection</h1>
-            <p className="text-xl text-white/90">Direct Factory Outlet - 90% OFF on All Products</p>
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+            <div className="lg:w-2/3">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4">Premium Crackers Collection</h1>
+              <p className="text-lg md:text-xl text-white/90">Direct Factory Outlet - 90% OFF on All Products</p>
+            </div>
+            <div className="lg:w-1/3">
+              <img 
+                src={helloCrackersBranded} 
+                alt="Hello Crackers - Premium Celebration Boxes"
+                className="w-full max-w-[300px] h-auto object-contain mx-auto"
+              />
+            </div>
           </div>
         </div>
       </section>

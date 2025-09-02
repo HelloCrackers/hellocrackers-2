@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Play, ShoppingCart } from "lucide-react";
+import helloCrackersBranded from "@/assets/hello-crackers-branded.png";
 
 // Same product data as Products page
 const priceListData = [
@@ -109,14 +110,23 @@ const PriceList = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
-        {/* Page Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-festive bg-clip-text text-transparent">
-            Price List & Quick Order
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Complete price list with all product details. Add quantities and order in bulk.
-          </p>
+        {/* Hero Section with Image */}
+        <div className="bg-gradient-festive text-white rounded-2xl p-8 mb-8">
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+            <div className="lg:w-2/3">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4">Price List & Quick Order</h1>
+              <p className="text-lg text-white/90 max-w-2xl">
+                Complete price list with all product details. Add quantities and order in bulk.
+              </p>
+            </div>
+            <div className="lg:w-1/3">
+              <img 
+                src={helloCrackersBranded} 
+                alt="Hello Crackers - Premium Celebration Boxes"
+                className="w-full max-w-[300px] h-auto object-contain mx-auto"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Controls */}

@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Shield, Truck, Users, Award, Heart, Star, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import familyCelebration from "@/assets/family-diwali-celebration.jpg";
 import helloCrackersLogo from "@/assets/hello-crackers-logo-unique.png";
 
 const About = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -379,12 +382,9 @@ const About = () => {
           <p className="text-xl mb-8 opacity-90">
             Join thousands of Tamil Nadu families who trust Hello Crackers for their Diwali celebrations
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-white text-brand-red hover:bg-gray-100">
+          <div className="flex justify-center">
+            <Button size="lg" className="bg-white text-brand-red hover:bg-gray-100" onClick={() => navigate('/products')}>
               Shop Now - 90% OFF
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-brand-red">
-              Contact Us
             </Button>
           </div>
         </div>

@@ -151,14 +151,7 @@ export const GiftBoxSection = () => {
               Create your own personalized celebration package with our expert guidance. 
               Minimum order ₹3,000 for free delivery across Tamil Nadu.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={() => navigate('/contact')}
-                variant="outline"
-                className="border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white"
-              >
-                Contact for Custom Box
-              </Button>
+            <div className="flex justify-center">
               <Button
                 onClick={() => navigate('/products')}
                 className="bg-gradient-festive text-white"
