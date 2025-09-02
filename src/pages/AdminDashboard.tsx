@@ -16,13 +16,13 @@ import {
 } from "lucide-react";
 
 // Import admin components
-import { ProductManager } from "@/components/admin/ProductManager";
+import { EnhancedProductManager } from "@/components/admin/EnhancedProductManager";
 import { OrderManager } from "@/components/admin/OrderManager";
 import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { HomepageEditor } from "@/components/admin/HomepageEditor";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
-import { ChallanManager } from "@/components/admin/ChallanManager";
+import { EnhancedChallanManager } from "@/components/admin/EnhancedChallanManager";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 
 export default function AdminDashboard() {
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="products" className="space-y-6">
-            <ProductManager />
+            <EnhancedProductManager />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="challans" className="space-y-6">
-            <ChallanManager />
+            <EnhancedChallanManager />
           </TabsContent>
         </Tabs>
       </div>

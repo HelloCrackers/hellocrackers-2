@@ -197,23 +197,53 @@ export const DashboardStats = () => {
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Button variant="outline" className="flex flex-col h-20">
-            <Package className="h-6 w-6 mb-2" />
+          <Button 
+            variant="outline" 
+            className="flex flex-col h-20 hover:bg-blue-50"
+            onClick={() => window.location.href = '#products'}
+          >
+            <Package className="h-6 w-6 mb-2 text-blue-600" />
             <span className="text-sm">Add Product</span>
           </Button>
           
-          <Button variant="outline" className="flex flex-col h-20">
-            <ShoppingCart className="h-6 w-6 mb-2" />
+          <Button 
+            variant="outline" 
+            className="flex flex-col h-20 hover:bg-green-50"
+            onClick={() => window.location.href = '#orders'}
+          >
+            <ShoppingCart className="h-6 w-6 mb-2 text-green-600" />
             <span className="text-sm">Process Orders</span>
           </Button>
           
-          <Button variant="outline" className="flex flex-col h-20">
-            <FileText className="h-6 w-6 mb-2" />
+          <Button 
+            variant="outline" 
+            className="flex flex-col h-20 hover:bg-purple-50"
+            onClick={() => {
+              const data = stats.recentOrders;
+              const csvContent = "data:text/csv;charset=utf-8," 
+                + "Order Number,Customer Name,Amount,Status,Date\n"
+                + data.map(order => 
+                  `${order.order_number},${order.customer_name},₹${order.total_amount},${order.order_status},${new Date(order.created_at).toLocaleDateString()}`
+                ).join("\n");
+              
+              const link = document.createElement("a");
+              link.setAttribute("href", encodeURI(csvContent));
+              link.setAttribute("download", "orders_export.csv");
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            <FileText className="h-6 w-6 mb-2 text-purple-600" />
             <span className="text-sm">Export Data</span>
           </Button>
           
-          <Button variant="outline" className="flex flex-col h-20">
-            <Users className="h-6 w-6 mb-2" />
+          <Button 
+            variant="outline" 
+            className="flex flex-col h-20 hover:bg-orange-50"
+            onClick={() => window.location.href = '#customers'}
+          >
+            <Users className="h-6 w-6 mb-2 text-orange-600" />
             <span className="text-sm">View Customers</span>
           </Button>
         </div>
