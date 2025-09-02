@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Clock, Truck, Shield, Star } from "lucide-react";
-import familyCelebration from "@/assets/diwali-family-hero.jpg";
+import { useNavigate } from "react-router-dom";
+import familyCelebrationHero from "@/assets/family-celebration-hero.jpg";
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="relative bg-gradient-hero text-white overflow-hidden">
       {/* Background Pattern */}
@@ -47,10 +50,20 @@ export const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button variant="celebration" size="lg" className="text-lg px-8">
+              <Button 
+                variant="celebration" 
+                size="lg" 
+                className="text-lg px-8"
+                onClick={() => navigate('/products')}
+              >
                 Shop Now - 90% OFF
               </Button>
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-brand-red">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-white text-white hover:bg-white hover:text-brand-red"
+                onClick={() => navigate('/price-list')}
+              >
                 View Price List
               </Button>
             </div>
@@ -83,9 +96,9 @@ export const HeroSection = () => {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-celebration">
               <img 
-                src={familyCelebration} 
-                alt="Family celebrating Diwali with sparklers and diyas"
-                className="w-full h-[500px] object-cover"
+                src={familyCelebrationHero} 
+                alt="Family celebrating with crackers and fireworks"
+                className="w-full h-[500px] object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             </div>

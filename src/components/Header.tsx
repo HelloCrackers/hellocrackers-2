@@ -1,12 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Menu, X, Sparkles } from "lucide-react";
+import { ShoppingCart, Menu, X, Sparkles, User, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import helloCrackersLogo from "@/assets/hello-crackers-logo.jpg";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { getCartCount } = useCart();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -57,50 +67,138 @@ export const Header = () => {
             </button>
           </nav>
 
-          {/* Cart & Mobile Menu */}
-          <div className="flex items-center space-x-3">
-            <Button variant="cart" size="sm" className="relative">
-              <ShoppingCart className="h-4 w-4" />
-              <span className="hidden sm:inline ml-1">Cart</span>
-              <span className="absolute -top-2 -right-2 bg-brand-gold text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </Button>
-            
-            {/* Mobile Menu Button */}
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-3">
             <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={toggleMenu}
+              variant="outline"
+              onClick={() => navigate('/contact')}
             >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              Contact Us
             </Button>
+
+            {/* Cart Button with Count */}
+            <Button
+              variant="outline"
+              className="relative"
+              onClick={() => navigate('/cart')}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Cart
+              {getCartCount() > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {getCartCount()}
+                </span>
+              )}
+            </Button>
+
+            {/* Auth Section */}
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <User className="h-4 w-4 mr-2" />
+                    {user?.name}
+                    {isAdmin && <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Admin</span>}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={logout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/auth')}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={toggleMenu}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-brand-orange/20 py-4">
             <nav className="flex flex-col space-y-3">
-              <Link to="/" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={() => {toggleMenu(); window.scrollTo(0, 0);}}>
+              <Link to="/" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={() => {setIsMenuOpen(false); window.scrollTo(0, 0);}}>
                 Home
               </Link>
-              <Link to="/products" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={() => {toggleMenu(); window.scrollTo(0, 0);}}>
+              <Link to="/products" className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors" onClick={() => {setIsMenuOpen(false); window.scrollTo(0, 0);}}>
                 Products
               </Link>
-              <button onClick={() => {navigate('/price-list'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/price-list'); setIsMenuOpen(false); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full">
                 Price List
               </button>
-              <button onClick={() => {navigate('/track-order'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/track-order'); setIsMenuOpen(false); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full">
                 Track Order
               </button>
-              <button onClick={() => {navigate('/about'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/about'); setIsMenuOpen(false); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full">
                 About Us
               </button>
-              <button onClick={() => {navigate('/contact'); toggleMenu(); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left">
+              <button onClick={() => {navigate('/contact'); setIsMenuOpen(false); window.scrollTo(0, 0);}} className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full">
                 Contact
               </button>
+              <button 
+                className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
+                onClick={() => {
+                  navigate('/cart');
+                  setIsMenuOpen(false);
+                }}
+              >
+                Cart ({getCartCount()})
+              </button>
+              {isAuthenticated ? (
+                <>
+                  {isAdmin && (
+                    <button 
+                      className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
+                      onClick={() => {
+                        navigate('/admin');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Admin Panel
+                    </button>
+                  )}
+                  <button 
+                    className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
+                    onClick={() => {
+                      logout();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    Logout ({user?.name})
+                  </button>
+                </>
+              ) : (
+                <button 
+                  className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
+                  onClick={() => {
+                    navigate('/auth');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Sign In
+                </button>
+              )}
             </nav>
           </div>
         )}

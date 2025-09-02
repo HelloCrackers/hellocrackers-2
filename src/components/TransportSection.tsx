@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Truck, MapPin, Clock, Shield, Phone } from "lucide-react";
-import helloCrackersTruck from "@/assets/hello-crackers-transport-branded.jpg";
+import transportHero from "@/assets/transport-hero.jpg";
 
 export const TransportSection = () => {
   return (
@@ -21,9 +21,9 @@ export const TransportSection = () => {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-celebration">
               <img 
-                src={helloCrackersTruck} 
+                src={transportHero} 
                 alt="Hello Crackers Tamil Nadu logistics truck"
-                className="w-full h-[400px] object-cover"
+                className="w-full h-[400px] object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               

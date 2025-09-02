@@ -11,9 +11,12 @@ import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Phone, Calendar, CreditCard, Receipt, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { generateChallanNumber, generateQuotationPDF, QuotationData } from "@/utils/pdfGenerator";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Billing() {
   const { cart, cartTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -29,13 +32,6 @@ export default function Billing() {
 
   const [challanNumber, setChallanNumber] = useState("");
   const [showChallan, setShowChallan] = useState(false);
-
-  const generateChallanNumber = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const orderNumber = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
-    return `HC${year}${orderNumber}`;
-  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
