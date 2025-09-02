@@ -361,8 +361,87 @@ export const useSupabase = () => {
     }
   };
 
+  // Category management
+  const createCategory = async (category: Omit<Category, 'id' | 'created_at' | 'updated_at'>): Promise<Category | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .insert([category])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Category created successfully",
+      });
+      
+      return data as Category;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create category",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
+  const updateCategory = async (id: string, updates: Partial<Category>): Promise<Category | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Category updated successfully",
+      });
+      
+      return data as Category;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update category",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
+  const deleteCategory = async (id: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+      });
+      
+      return true;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete category",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   // File upload
-  const uploadFile = async (bucket: string, path: string, file: File): Promise<string | null> => {
+  const uploadFile = async (bucket: string, path: string, file: File) => {
     try {
       const { data, error } = await supabase.storage
         .from(bucket)
@@ -377,14 +456,14 @@ export const useSupabase = () => {
         .from(bucket)
         .getPublicUrl(data.path);
       
-      return publicData.publicUrl;
+      return { success: true, url: publicData.publicUrl };
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to upload file",
         variant: "destructive",
       });
-      return null;
+      return { success: false, url: null };
     }
   };
 
@@ -404,6 +483,9 @@ export const useSupabase = () => {
     
     // Categories
     fetchCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory,
     
     // Site Settings
     fetchSiteSettings,
@@ -415,5 +497,8 @@ export const useSupabase = () => {
     
     // File upload
     uploadFile,
+    
+    // Direct supabase access
+    supabase,
   };
 };

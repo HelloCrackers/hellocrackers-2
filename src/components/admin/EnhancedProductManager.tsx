@@ -162,7 +162,10 @@ export const EnhancedProductManager = () => {
             stock: product.stock,
             description: product.description || '',
             content: product.content || '',
-            status: 'active'
+            status: 'active' as const,
+            rating: 0,
+            reviews_count: 0,
+            featured: false
           });
           successCount++;
         } catch (error) {
@@ -191,11 +194,20 @@ export const EnhancedProductManager = () => {
 
     try {
       if (editingProduct) {
-        await updateProduct(editingProduct.id, formData);
+        await updateProduct(editingProduct.id, {
+          ...formData,
+          status: formData.status as 'active' | 'inactive'
+        });
         toast({ title: "Product updated successfully" });
         setEditingProduct(null);
       } else {
-        await createProduct(formData);
+        await createProduct({
+          ...formData,
+          status: formData.status as 'active' | 'inactive',
+          rating: 0,
+          reviews_count: 0,
+          featured: false
+        });
         toast({ title: "Product created successfully" });
         setShowAddProduct(false);
       }
