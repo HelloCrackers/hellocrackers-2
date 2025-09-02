@@ -10,7 +10,7 @@ import Products from "./pages/Products";
 import PriceList from "./pages/PriceList";
 import TrackOrder from "./pages/TrackOrder";
 import Contact from "./pages/Contact";
-import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Order from "./pages/Order";
 import Cart from "./pages/Cart";
