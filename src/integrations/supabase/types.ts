@@ -14,7 +14,276 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      challan_templates: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          template_data: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          template_data: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          template_data?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          status: string
+          total_orders: number | null
+          total_spent: number | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          status?: string
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          status?: string
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      homepage_content: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          section_name: string
+          updated_at: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          id?: string
+          section_name: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          section_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          challan_number: string | null
+          created_at: string
+          customer_address: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          items: Json
+          order_number: string
+          order_status: string
+          payment_id: string | null
+          payment_status: string
+          total_amount: number
+          tracking_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          challan_number?: string | null
+          created_at?: string
+          customer_address?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          items: Json
+          order_number: string
+          order_status?: string
+          payment_id?: string | null
+          payment_status?: string
+          total_amount: number
+          tracking_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          challan_number?: string | null
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          items?: Json
+          order_number?: string
+          order_status?: string
+          payment_id?: string | null
+          payment_status?: string
+          total_amount?: number
+          tracking_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string
+          description: string | null
+          discount: number
+          featured: boolean | null
+          final_rate: number
+          id: string
+          image_url: string | null
+          mrp: number
+          product_code: string
+          product_name: string
+          rating: number | null
+          reviews_count: number | null
+          status: string
+          stock: number
+          updated_at: string
+          user_for: string
+          video_url: string | null
+        }
+        Insert: {
+          category: string
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          discount?: number
+          featured?: boolean | null
+          final_rate: number
+          id?: string
+          image_url?: string | null
+          mrp: number
+          product_code: string
+          product_name: string
+          rating?: number | null
+          reviews_count?: number | null
+          status?: string
+          stock?: number
+          updated_at?: string
+          user_for: string
+          video_url?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          discount?: number
+          featured?: boolean | null
+          final_rate?: number
+          id?: string
+          image_url?: string | null
+          mrp?: number
+          product_code?: string
+          product_name?: string
+          rating?: number | null
+          reviews_count?: number | null
+          status?: string
+          stock?: number
+          updated_at?: string
+          user_for?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

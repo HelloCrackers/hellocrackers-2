@@ -42,7 +42,7 @@ const App = () => {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/billing" element={<Billing />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/terms" element={<Terms />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
