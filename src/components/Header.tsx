@@ -15,6 +15,8 @@ import helloCrackersLogo from "@/assets/hello-crackers-logo.jpg";
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  
+  // Auth and Cart hooks with error handling
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { getCartCount } = useCart();
 

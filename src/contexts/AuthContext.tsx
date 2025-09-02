@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
+// Force rebuild - Auth Context with user management
+
 export interface User {
   id: string;
   email: string;
