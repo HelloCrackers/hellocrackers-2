@@ -120,9 +120,9 @@ export const ProductManager = () => {
       if (imageFiles.length > 0) {
         const file = imageFiles[0];
         const fileName = `${formData.product_code}_${Date.now()}.${file.name.split('.').pop()}`;
-        const imageUrl = await uploadFile('products', fileName, file);
-        if (imageUrl) {
-          formData.image_url = imageUrl;
+        const uploadResult = await uploadFile('products', fileName, file);
+        if (uploadResult.success && uploadResult.url) {
+          formData.image_url = uploadResult.url;
         }
       }
 

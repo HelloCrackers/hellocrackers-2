@@ -16,37 +16,9 @@ interface ChallanTemplate {
   id: string;
   name: string;
   is_default: boolean;
-  template_data: {
-    layout: 'portrait' | 'landscape';
-    colors: {
-      primary: string;
-      secondary: string;
-      accent: string;
-      text: string;
-      background: string;
-    };
-    header: {
-      company_name: string;
-      address: string;
-      phone: string;
-      email: string;
-      logo_url: string;
-    };
-    sections: {
-      show_bill_to: boolean;
-      show_ship_to: boolean;
-      show_terms: boolean;
-      custom_fields: Array<{
-        name: string;
-        type: 'text' | 'number' | 'date';
-        required: boolean;
-      }>;
-    };
-    footer: {
-      text: string;
-      signature_space: boolean;
-    };
-  };
+  template_data: any; // Using any for JSON data from Supabase
+  created_at: string;
+  updated_at: string;
 }
 
 export const EnhancedChallanManager = () => {
