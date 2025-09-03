@@ -36,8 +36,11 @@ export interface Order {
   total_amount: number;
   payment_status: 'pending' | 'paid' | 'failed';
   payment_id?: string;
-  order_status: 'confirmed' | 'factory' | 'dispatched' | 'transport' | 'delivered' | 'cancelled';
+  order_status: 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   tracking_notes?: string;
+  manual_payment_confirmed?: boolean;
+  payment_proof_url?: string;
+  admin_notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -79,6 +82,15 @@ export interface HomepageContent {
   id: string;
   section_name: string;
   content: any;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaymentSetting {
+  id: string;
+  key: string;
+  value: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }
@@ -467,6 +479,81 @@ export const useSupabase = () => {
     }
   };
 
+  // Payment settings functions
+  const fetchPaymentSettings = async (): Promise<PaymentSetting[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('payment_settings')
+        .select('*')
+        .order('created_at');
+      
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch payment settings",
+        variant: "destructive",
+      });
+      return [];
+    }
+  };
+
+  const updatePaymentSetting = async (key: string, value: string): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('payment_settings')
+        .update({ value, updated_at: new Date().toISOString() })
+        .eq('key', key);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Payment setting updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update payment setting",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const updateOrderPaymentStatus = async (id: string, confirmed: boolean, adminNotes?: string): Promise<void> => {
+    try {
+      const updates: any = { 
+        manual_payment_confirmed: confirmed,
+        payment_status: confirmed ? 'paid' : 'pending'
+      };
+      
+      if (adminNotes) {
+        updates.admin_notes = adminNotes;
+      }
+
+      const { error } = await supabase
+        .from('orders')
+        .update(updates)
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: confirmed ? "Payment confirmed successfully" : "Payment status updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update payment status",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return {
     // Products
     fetchProducts,
@@ -477,6 +564,7 @@ export const useSupabase = () => {
     // Orders
     fetchOrders,
     updateOrderStatus,
+    updateOrderPaymentStatus,
     
     // Customers
     fetchCustomers,
@@ -494,6 +582,10 @@ export const useSupabase = () => {
     // Homepage Content
     fetchHomepageContent,
     updateHomepageContent,
+    
+    // Payment Settings
+    fetchPaymentSettings,
+    updatePaymentSetting,
     
     // File upload
     uploadFile,

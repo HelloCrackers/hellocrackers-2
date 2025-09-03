@@ -139,6 +139,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_notes: string | null
           challan_number: string | null
           created_at: string
           customer_address: string | null
@@ -147,15 +148,18 @@ export type Database = {
           customer_phone: string
           id: string
           items: Json
+          manual_payment_confirmed: boolean | null
           order_number: string
           order_status: string
           payment_id: string | null
+          payment_proof_url: string | null
           payment_status: string
           total_amount: number
           tracking_notes: string | null
           updated_at: string
         }
         Insert: {
+          admin_notes?: string | null
           challan_number?: string | null
           created_at?: string
           customer_address?: string | null
@@ -164,15 +168,18 @@ export type Database = {
           customer_phone: string
           id?: string
           items: Json
+          manual_payment_confirmed?: boolean | null
           order_number: string
           order_status?: string
           payment_id?: string | null
+          payment_proof_url?: string | null
           payment_status?: string
           total_amount: number
           tracking_notes?: string | null
           updated_at?: string
         }
         Update: {
+          admin_notes?: string | null
           challan_number?: string | null
           created_at?: string
           customer_address?: string | null
@@ -181,13 +188,42 @@ export type Database = {
           customer_phone?: string
           id?: string
           items?: Json
+          manual_payment_confirmed?: boolean | null
           order_number?: string
           order_status?: string
           payment_id?: string | null
+          payment_proof_url?: string | null
           payment_status?: string
           total_amount?: number
           tracking_notes?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }

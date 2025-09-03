@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { StickyOrderButton } from "@/components/StickyOrderButton";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useSupabase, Product } from "@/hooks/useSupabase";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,109 +20,42 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import crackersDisplay from "@/assets/crackers-display.jpg";
 import helloCrackersBranded from "@/assets/hello-crackers-branded.png";
-
-// Mock product data with the exact format requested
-const products = [
-  {
-    productCode: "H001",
-    image: crackersDisplay,
-    video: crackersDisplay, // In real app, this would be video
-    userFor: "Family",
-    productName: "Flower Pots",
-    category: "Fancy Crackers",
-    mrp: 500,
-    discount: 90,
-    finalRate: 50,
-    rating: 4.8,
-    reviews: 245,
-    comments: "Excellent quality! Kids loved it."
-  },
-  {
-    productCode: "H002",
-    image: crackersDisplay,
-    video: crackersDisplay,
-    userFor: "Adult",
-    productName: "Atom Bomb",
-    category: "Fancy Crackers",
-    mrp: 1000,
-    discount: 90,
-    finalRate: 100,
-    rating: 4.9,
-    reviews: 189,
-    comments: "Amazing sound and effect!"
-  },
-  {
-    productCode: "H003",
-    image: crackersDisplay,
-    video: crackersDisplay,
-    userFor: "Kids",
-    productName: "Sparklers Premium",
-    category: "Sparklers",
-    mrp: 200,
-    discount: 90,
-    finalRate: 20,
-    rating: 4.7,
-    reviews: 356,
-    comments: "Safe for children, long burning time."
-  },
-  {
-    productCode: "H004",
-    image: crackersDisplay,
-    video: crackersDisplay,
-    userFor: "Family",
-    productName: "Twinkling Star",
-    category: "Fancy Crackers",
-    mrp: 800,
-    discount: 90,
-    finalRate: 80,
-    rating: 4.6,
-    reviews: 142,
-    comments: "Beautiful colors and patterns."
-  },
-  {
-    productCode: "H005",
-    image: crackersDisplay,
-    video: crackersDisplay,
-    userFor: "Adult",
-    productName: "Bijili Crackers",
-    category: "Bijili Crackers",
-    mrp: 1500,
-    discount: 90,
-    finalRate: 150,
-    rating: 4.8,
-    reviews: 98,
-    comments: "Powerful sound, great quality."
-  },
-  {
-    productCode: "H006",
-    image: crackersDisplay,
-    video: crackersDisplay,
-    userFor: "Kids",
-    productName: "Safe Sparklers",
-    category: "Sparklers",
-    mrp: 150,
-    discount: 90,
-    finalRate: 15,
-    rating: 4.9,
-    reviews: 423,
-    comments: "Perfect for young children, very safe."
-  }
-];
 
 export default function Products() {
   const [activeTab, setActiveTab] = useState("Family Crackers");
   const [quantities, setQuantities] = useState<{[key: string]: string}>({});
   const [showMinOrderDialog, setShowMinOrderDialog] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { addToCart, checkMinimumOrder } = useCart();
   const { toast } = useToast();
+  const { fetchProducts } = useSupabase();
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      toast({
+        title: "Failed to load products",
+        description: "Please refresh the page to try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const tabs = ["Family Crackers", "Adult Crackers", "Kids Crackers"];
 
   const filteredProducts = products.filter(
-    product => activeTab.includes(product.userFor)
+    product => activeTab.includes(product.user_for)
   );
 
   const updateQuantity = (productCode: string, quantity: string) => {
@@ -131,21 +65,21 @@ export default function Products() {
     }));
   };
 
-  const handleAddToCart = (product: typeof products[0]) => {
-    const qty = parseInt(quantities[product.productCode] || "1");
+  const handleAddToCart = (product: Product) => {
+    const qty = parseInt(quantities[product.product_code] || "1");
     if (qty > 0) {
       addToCart({
-        productCode: product.productCode,
-        productName: product.productName,
-        finalRate: product.finalRate,
-        image: product.image,
-        userFor: product.userFor
+        productCode: product.product_code,
+        productName: product.product_name,
+        finalRate: product.final_rate,
+        image: product.image_url || helloCrackersBranded,
+        userFor: product.user_for
       }, qty);
       
       // Reset quantity input
       setQuantities(prev => ({
         ...prev,
-        [product.productCode]: ""
+        [product.product_code]: ""
       }));
     }
   };
@@ -162,6 +96,20 @@ export default function Products() {
     const qty = parseInt(quantities[productCode] || "1");
     return finalRate * qty;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-orange"></div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -242,46 +190,54 @@ export default function Products() {
 
           {/* Product Rows */}
           {filteredProducts.map((product) => (
-            <Card key={product.productCode} className="overflow-hidden hover:shadow-celebration transition-all duration-300">
+            <Card key={product.product_code} className="overflow-hidden hover:shadow-celebration transition-all duration-300">
               {/* Desktop Layout */}
               <div className="hidden lg:grid lg:grid-cols-12 gap-4 p-4 items-center">
                 <div className="col-span-1">
                   <Badge variant="outline" className="border-brand-red text-brand-red">
-                    {product.productCode}
+                    {product.product_code}
                   </Badge>
                 </div>
                 
                 <div className="col-span-1">
                   <img 
-                    src={product.image} 
-                    alt={product.productName}
+                    src={product.image_url || helloCrackersBranded} 
+                    alt={product.product_name}
                     className="w-16 h-16 rounded-lg object-cover"
                   />
                 </div>
                 
                 <div className="col-span-1">
                   <div className="relative w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                    <Play className="h-6 w-6 text-brand-orange" />
+                    {product.video_url ? (
+                      <video 
+                        src={product.video_url} 
+                        className="w-16 h-16 rounded-lg object-cover"
+                        muted 
+                      />
+                    ) : (
+                      <Play className="h-6 w-6 text-brand-orange" />
+                    )}
                   </div>
                 </div>
                 
                 <div className="col-span-1">
                   <Badge 
                     className={`${
-                      product.userFor === "Family" ? "bg-brand-gold text-black" :
-                      product.userFor === "Adult" ? "bg-brand-red text-white" :
+                      product.user_for === "Family" ? "bg-brand-gold text-black" :
+                      product.user_for === "Adult" ? "bg-brand-red text-white" :
                       "bg-brand-purple text-white"
                     }`}
                   >
-                    {product.userFor}
+                    {product.user_for}
                   </Badge>
                 </div>
                 
                 <div className="col-span-2">
-                  <h3 className="font-semibold text-gray-800">{product.productName}</h3>
+                  <h3 className="font-semibold text-gray-800">{product.product_name}</h3>
                   <div className="flex items-center gap-1 mt-1">
                     <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm text-gray-600">{product.rating} ({product.reviews})</span>
+                    <span className="text-sm text-gray-600">{product.rating} ({product.reviews_count})</span>
                   </div>
                 </div>
                 
@@ -300,26 +256,26 @@ export default function Products() {
                 </div>
                 
                 <div className="col-span-1">
-                  <span className="font-bold text-brand-red text-lg">₹{product.finalRate}</span>
+                  <span className="font-bold text-brand-red text-lg">₹{product.final_rate}</span>
                 </div>
                 
                  <div className="col-span-1">
                    <Input
                      type="number"
                      min="1"
-                     value={quantities[product.productCode] || ""}
-                     onChange={(e) => updateQuantity(product.productCode, e.target.value)}
+                     value={quantities[product.product_code] || ""}
+                     onChange={(e) => updateQuantity(product.product_code, e.target.value)}
                      className="w-20 text-center"
                      placeholder="Qty"
                    />
                    <div className="text-xs text-gray-500 mt-1">
-                     Bulk: 5,10,100
+                     Stock: {product.stock}
                    </div>
                  </div>
                 
                 <div className="col-span-1">
                   <div className="text-center">
-                    <div className="font-bold text-brand-red">₹{getAmount(product.finalRate, product.productCode)}</div>
+                    <div className="font-bold text-brand-red">₹{getAmount(product.final_rate, product.product_code)}</div>
                     <Button variant="cart" size="sm" className="mt-2 w-full" onClick={() => handleAddToCart(product)}>
                       <ShoppingCart className="h-4 w-4" />
                     </Button>
@@ -332,43 +288,51 @@ export default function Products() {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
                     <img 
-                      src={product.image} 
-                      alt={product.productName}
+                      src={product.image_url || helloCrackersBranded} 
+                      alt={product.product_name}
                       className="w-20 h-20 rounded-lg object-cover"
                     />
                     <div className="mt-2 bg-gray-100 rounded-lg w-20 h-12 flex items-center justify-center">
-                      <Play className="h-4 w-4 text-brand-orange" />
+                      {product.video_url ? (
+                        <video 
+                          src={product.video_url} 
+                          className="w-20 h-12 rounded-lg object-cover"
+                          muted 
+                        />
+                      ) : (
+                        <Play className="h-4 w-4 text-brand-orange" />
+                      )}
                     </div>
                   </div>
                   
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline" className="border-brand-red text-brand-red">
-                        {product.productCode}
+                        {product.product_code}
                       </Badge>
                       <Badge 
                         className={`${
-                          product.userFor === "Family" ? "bg-brand-gold text-black" :
-                          product.userFor === "Adult" ? "bg-brand-red text-white" :
+                          product.user_for === "Family" ? "bg-brand-gold text-black" :
+                          product.user_for === "Adult" ? "bg-brand-red text-white" :
                           "bg-brand-purple text-white"
                         }`}
                       >
-                        {product.userFor}
+                        {product.user_for}
                       </Badge>
                     </div>
                     
-                    <h3 className="font-semibold text-lg mb-1">{product.productName}</h3>
+                    <h3 className="font-semibold text-lg mb-1">{product.product_name}</h3>
                     <p className="text-sm text-gray-600 mb-2">{product.category}</p>
                     
                     <div className="flex items-center gap-1 mb-3">
                       <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600">{product.rating} ({product.reviews} reviews)</span>
+                      <span className="text-sm text-gray-600">{product.rating} ({product.reviews_count} reviews)</span>
                     </div>
                     
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-gray-500 line-through">₹{product.mrp}</span>
                       <Badge className="bg-brand-orange text-white">{product.discount}% OFF</Badge>
-                      <span className="font-bold text-brand-red text-xl">₹{product.finalRate}</span>
+                      <span className="font-bold text-brand-red text-xl">₹{product.final_rate}</span>
                     </div>
                     
                     <div className="flex items-center gap-3">
@@ -377,17 +341,17 @@ export default function Products() {
                          <Input
                            type="number"
                            min="1"
-                           value={quantities[product.productCode] || ""}
-                           onChange={(e) => updateQuantity(product.productCode, e.target.value)}
+                           value={quantities[product.product_code] || ""}
+                           onChange={(e) => updateQuantity(product.product_code, e.target.value)}
                            className="w-20 text-center"
                            placeholder="Qty"
                          />
                          <div className="text-xs text-gray-500">
-                           Bulk: 5,10,100
+                           Stock: {product.stock}
                          </div>
                        </div>
                       <div className="text-right flex-1">
-                        <div className="font-bold text-brand-red text-lg">₹{getAmount(product.finalRate, product.productCode)}</div>
+                        <div className="font-bold text-brand-red text-lg">₹{getAmount(product.final_rate, product.product_code)}</div>
                         <Button variant="cart" size="sm" className="mt-1" onClick={() => handleAddToCart(product)}>
                           <ShoppingCart className="h-4 w-4 mr-1" />
                           Add to Cart
@@ -395,10 +359,12 @@ export default function Products() {
                       </div>
                     </div>
                     
-                    {/* Customer Comments */}
-                    <div className="mt-3 p-2 bg-gray-50 rounded">
-                      <p className="text-sm text-gray-600 italic">"{product.comments}"</p>
-                    </div>
+                    {/* Product Description */}
+                    {product.description && (
+                      <div className="mt-3 p-2 bg-gray-50 rounded">
+                        <p className="text-sm text-gray-600 italic">{product.description}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
