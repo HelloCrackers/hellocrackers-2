@@ -17,12 +17,14 @@ import {
 
 // Import admin components
 import { EnhancedProductManager } from "@/components/admin/EnhancedProductManager";
+import { BulkUploadManager } from "@/components/admin/BulkUploadManager";
 import { OrderManager } from "@/components/admin/OrderManager";
 import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { HomepageEditor } from "@/components/admin/HomepageEditor";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
 import { EnhancedChallanManager } from "@/components/admin/EnhancedChallanManager";
+import { QuotationTemplateManager } from "@/components/admin/QuotationTemplateManager";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 
 export default function AdminDashboard() {
@@ -52,15 +54,17 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="bulk-upload">Bulk Upload</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="homepage">Homepage</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="challans">Challans</TabsTrigger>
+            <TabsTrigger value="quotations">Quotations</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
@@ -69,6 +73,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="products" className="space-y-6">
             <EnhancedProductManager />
+          </TabsContent>
+
+          <TabsContent value="bulk-upload" className="space-y-6">
+            <BulkUploadManager />
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
@@ -93,6 +101,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="challans" className="space-y-6">
             <EnhancedChallanManager />
+          </TabsContent>
+
+          <TabsContent value="quotations" className="space-y-6">
+            <QuotationTemplateManager />
           </TabsContent>
         </Tabs>
       </div>
