@@ -297,10 +297,10 @@ export const EnhancedChallanManager = () => {
               <div className="flex gap-1 mt-2">
                 {Object.values(template.template_data.colors).slice(0, 3).map((color, index) => (
                   <div
-                    key={index}
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: color }}
-                  />
+                     key={index}
+                     className="w-4 h-4 rounded-full"
+                     style={{ backgroundColor: color as string }}
+                   />
                 ))}
               </div>
             </Card>
