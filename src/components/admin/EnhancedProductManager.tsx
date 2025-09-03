@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useSupabase, Product } from "@/hooks/useSupabase";
 import { useToast } from "@/hooks/use-toast";
-import { processZipFile, processExcelFile, ProductData, exportToExcel, generateProductTemplate } from "@/utils/fileProcessing";
+import { processZipFile, processExcelFile, ProductData, exportToExcel, generateProductTemplate, generateErrorLog, ProcessResult, MediaProcessResult } from "@/utils/fileProcessing";
 import { removeBackground, loadImage } from "@/utils/backgroundRemoval";
 import { 
   Upload, Download, Package, Edit, Trash2, Save, X, 
@@ -102,12 +102,23 @@ export const EnhancedProductManager = () => {
     try {
       toast({ title: "Processing ZIP file...", description: "This may take a few minutes" });
       
-      const processedFiles = await processZipFile(file, true); // Remove backgrounds
+      const productCodes = products.map(p => p.product_code);
+      const result = await processZipFile(file, productCodes, true); // Remove backgrounds
+      
+      if (!result.success) {
+        generateErrorLog(result.errors, `zip_upload_errors_${Date.now()}`);
+        toast({ 
+          title: "Upload failed with errors", 
+          description: `${result.unmappedCount} folders don't match product codes. Error log downloaded.`,
+          variant: "destructive" 
+        });
+        return;
+      }
       
       let successCount = 0;
       let errorCount = 0;
 
-      for (const processedFile of processedFiles) {
+      for (const processedFile of result.processedFiles) {
         try {
           const fileToUpload = processedFile.processedBlob 
             ? new File([processedFile.processedBlob], processedFile.file.name, { type: 'image/png' })
@@ -144,12 +155,22 @@ export const EnhancedProductManager = () => {
     try {
       toast({ title: "Processing Excel file...", description: "Reading product data" });
       
-      const productData = await processExcelFile(file);
+      const result = await processExcelFile(file);
+      
+      if (!result.success) {
+        generateErrorLog(result.errors, `excel_upload_errors_${Date.now()}`);
+        toast({ 
+          title: "Upload failed with errors", 
+          description: `${result.errorCount} errors found. Error log downloaded.`,
+          variant: "destructive" 
+        });
+        return;
+      }
       
       let successCount = 0;
       let errorCount = 0;
 
-      for (const product of productData) {
+      for (const product of result.data || []) {
         try {
           await createProduct({
             product_code: product.productCode,

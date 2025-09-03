@@ -13,7 +13,7 @@ import {
   Plus, Edit, Trash2, Upload, Download, FileText, Image, Video,
   Search, Filter, Save, X, Eye, RotateCcw
 } from "lucide-react";
-import { processZipFile, processExcelFile, exportToExcel, generateProductTemplate, validateImageFile } from "@/utils/fileProcessing";
+import { processZipFile, processExcelFile, exportToExcel, generateProductTemplate, validateImageFile, generateErrorLog, ProcessResult, MediaProcessResult } from "@/utils/fileProcessing";
 import { removeBackground, loadImage } from "@/utils/backgroundRemoval";
 
 export const ProductManager = () => {
@@ -160,9 +160,20 @@ export const ProductManager = () => {
     try {
       // If it's a ZIP file, process it
       if (files[0].name.endsWith('.zip')) {
-        const processedFiles = await processZipFile(files[0], true); // Remove backgrounds
+        const productCodes = products.map(p => p.product_code);
+        const result = await processZipFile(files[0], productCodes, true); // Remove backgrounds
         
-        for (const { file, processedBlob, error } of processedFiles) {
+        if (!result.success) {
+          generateErrorLog(result.errors, `zip_upload_errors_${Date.now()}`);
+          toast({ 
+            title: "Upload failed with errors", 
+            description: `${result.unmappedCount} folders don't match product codes. Error log downloaded.`,
+            variant: "destructive" 
+          });
+          return;
+        }
+        
+        for (const { file, processedBlob, error } of result.processedFiles) {
           if (error) {
             toast({
               title: "Processing Error",
@@ -236,9 +247,19 @@ export const ProductManager = () => {
 
     setLoading(true);
     try {
-      const productData = await processExcelFile(file);
+      const result = await processExcelFile(file);
       
-      for (const product of productData) {
+      if (!result.success) {
+        generateErrorLog(result.errors, `excel_upload_errors_${Date.now()}`);
+        toast({ 
+          title: "Upload failed with errors", 
+          description: `${result.errorCount} errors found. Error log downloaded.`,
+          variant: "destructive" 
+        });
+        return;
+      }
+      
+      for (const product of result.data || []) {
         await createProduct({
           product_code: product.productCode,
           product_name: product.productName,
@@ -262,7 +283,7 @@ export const ProductManager = () => {
       await loadProducts();
       toast({
         title: "Bulk Upload Complete",
-        description: `Successfully uploaded ${productData.length} products`,
+        description: `Successfully uploaded ${result.processedCount} products`,
       });
     } catch (error) {
       toast({
