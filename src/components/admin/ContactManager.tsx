@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Plus, Trash2, Edit3 } from "lucide-react";
+import { Save, Plus, Trash2, Edit3, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContactInfo {
   id: string;
@@ -33,6 +34,8 @@ interface SiteSettings {
 }
 
 export const ContactManager = () => {
+  const [loading, setLoading] = useState(false);
+  const [loadingSettings, setLoadingSettings] = useState(false);
   const [contactInfo, setContactInfo] = useState<ContactInfo[]>([
     {
       id: "1",
@@ -84,6 +87,54 @@ export const ContactManager = () => {
   const [editingContact, setEditingContact] = useState<string | null>(null);
   const { toast } = useToast();
 
+  useEffect(() => {
+    loadSiteSettings();
+  }, []);
+
+  const loadSiteSettings = async () => {
+    setLoadingSettings(true);
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*');
+
+      if (error) throw error;
+
+      // Convert array of key-value pairs to settings object
+      const settingsMap = data.reduce((acc: any, setting: any) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      }, {});
+
+      // Update state with database values, keeping defaults for missing keys
+      setSiteSettings(prev => ({
+        businessName: settingsMap.business_name || prev.businessName,
+        tagline: settingsMap.tagline || prev.tagline,
+        description: settingsMap.description || prev.description,
+        address: settingsMap.address || prev.address,
+        phone1: settingsMap.phone1 || prev.phone1,
+        phone2: settingsMap.phone2 || prev.phone2,
+        email1: settingsMap.email1 || prev.email1,
+        email2: settingsMap.email2 || prev.email2,
+        businessHours: settingsMap.business_hours || prev.businessHours,
+        socialMedia: {
+          instagram: settingsMap.instagram_url || prev.socialMedia.instagram,
+          facebook: settingsMap.facebook_url || prev.socialMedia.facebook,
+          youtube: settingsMap.youtube_url || prev.socialMedia.youtube,
+        }
+      }));
+    } catch (error) {
+      console.error('Error loading site settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load site settings.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
+
   const handleSaveContact = (contactId: string, field: string, value: string) => {
     setContactInfo(prev => prev.map(contact => 
       contact.id === contactId 
@@ -117,22 +168,67 @@ export const ContactManager = () => {
     });
   };
 
-  const handleSaveSiteSettings = () => {
-    // In a real app, this would save to database
-    toast({
-      title: "Settings Saved",
-      description: "Website contact details have been updated successfully."
-    });
+  const handleSaveSiteSettings = async () => {
+    setLoading(true);
+    try {
+      // Prepare settings data for upsert
+      const settingsData = [
+        { key: 'business_name', value: siteSettings.businessName, description: 'Business name' },
+        { key: 'tagline', value: siteSettings.tagline, description: 'Business tagline' },
+        { key: 'description', value: siteSettings.description, description: 'Business description' },
+        { key: 'address', value: siteSettings.address, description: 'Business address' },
+        { key: 'phone1', value: siteSettings.phone1, description: 'Primary phone number' },
+        { key: 'phone2', value: siteSettings.phone2, description: 'Secondary phone number' },
+        { key: 'email1', value: siteSettings.email1, description: 'Primary email address' },
+        { key: 'email2', value: siteSettings.email2, description: 'Secondary email address' },
+        { key: 'business_hours', value: siteSettings.businessHours, description: 'Business operating hours' },
+        { key: 'instagram_url', value: siteSettings.socialMedia.instagram, description: 'Instagram URL' },
+        { key: 'facebook_url', value: siteSettings.socialMedia.facebook, description: 'Facebook URL' },
+        { key: 'youtube_url', value: siteSettings.socialMedia.youtube, description: 'YouTube URL' },
+      ];
+
+      // Upsert each setting
+      for (const setting of settingsData) {
+        const { error } = await supabase
+          .from('site_settings')
+          .upsert({ 
+            key: setting.key, 
+            value: setting.value, 
+            description: setting.description 
+          }, { 
+            onConflict: 'key' 
+          });
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Settings Saved",
+        description: "Website contact details have been updated successfully."
+      });
+    } catch (error) {
+      console.error('Error saving site settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save site settings.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Contact Management</h2>
-        <Button onClick={handleAddContact} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Contact
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleAddContact} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Contact
+          </Button>
+          {loadingSettings && <Loader2 className="h-4 w-4 animate-spin" />}
+        </div>
       </div>
 
       {/* Contact Information Cards */}
@@ -338,9 +434,18 @@ export const ContactManager = () => {
           </div>
         </div>
         
-        <Button onClick={handleSaveSiteSettings} className="mt-6 w-full">
-          <Save className="h-4 w-4 mr-2" />
-          Save Website Details
+        <Button onClick={handleSaveSiteSettings} className="mt-6 w-full" disabled={loading}>
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4 mr-2" />
+              Save Website Details
+            </>
+          )}
         </Button>
       </Card>
     </div>
