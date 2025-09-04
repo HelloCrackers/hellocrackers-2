@@ -12,6 +12,7 @@ import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { HomepageEditor } from "@/components/admin/HomepageEditor";
 import { GiftBoxManager } from "@/components/admin/GiftBoxManager";
+import { HomepageContentManager } from "@/components/admin/HomepageContentManager";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
 import { ChallanTemplateManagerV2 } from "@/components/admin/ChallanTemplateManagerV2";
 import { QuotationTemplateManagerV2 } from "@/components/admin/QuotationTemplateManagerV2";
@@ -98,7 +99,7 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="homepage">
-            <HomepageEditor />
+            <HomepageContentManager />
           </TabsContent>
 
           <TabsContent value="settings">

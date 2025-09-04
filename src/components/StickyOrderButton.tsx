@@ -10,30 +10,30 @@ export const StickyOrderButton = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-      {/* Order Now Button - Royal Purple */}
+      {/* Order Now Button - Royal Purple - Smaller Size */}
       <Button 
         onClick={() => navigate('/products')}
-        className="bg-[#7F00FF] hover:bg-[#6600CC] text-white shadow-2xl rounded-full px-6 py-4 font-bold text-lg transition-all duration-300 hover:scale-105"
-        size="lg"
+        className="bg-[#7F00FF] hover:bg-[#6600CC] text-white shadow-lg rounded-full px-4 py-2 font-semibold text-sm transition-all duration-300 hover:scale-105"
+        size="sm"
       >
-        <Package className="h-6 w-6 mr-2" />
+        <Package className="h-4 w-4 mr-1" />
         Order Now
       </Button>
       
-      {/* Cart Button with Enhanced Info */}
+      {/* Cart Button with Enhanced Info - Smaller Size */}
       <Button 
         onClick={() => navigate('/cart')}
         variant="outline" 
-        className="relative shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-105 bg-white border-2 border-[#7F00FF] hover:bg-[#7F00FF] hover:text-white min-w-[80px] flex flex-col items-center"
-        size="lg"
+        className="relative shadow-lg rounded-full p-2 transition-all duration-300 hover:scale-105 bg-white border-2 border-[#7F00FF] hover:bg-[#7F00FF] hover:text-white min-w-[60px] flex flex-col items-center"
+        size="sm"
       >
-        <ShoppingCart className="h-6 w-6" />
-        <div className="text-xs mt-1 flex flex-col items-center">
-          <span className="font-semibold">{cartCount} items</span>
-          {cartTotal > 0 && <span className="text-xs">₹{cartTotal}</span>}
+        <ShoppingCart className="h-4 w-4" />
+        <div className="text-[10px] mt-1 flex flex-col items-center">
+          <span className="font-medium">{cartCount}</span>
+          {cartTotal > 0 && <span className="text-[8px]">₹{cartTotal}</span>}
         </div>
         {cartCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold text-[10px]">
             {cartCount}
           </span>
         )}
