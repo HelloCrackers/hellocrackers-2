@@ -565,7 +565,7 @@ export const EnhancedProductManager = () => {
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Products ({products.length})</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {products.sort((a, b) => a.product_code.localeCompare(b.product_code)).map((product) => (
             <Card key={product.id} className="p-4">
               {product.image_url && (
                 <img src={product.image_url} alt={product.product_name} className="w-full h-32 object-cover rounded mb-4" />

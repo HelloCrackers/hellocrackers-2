@@ -158,7 +158,10 @@ export const QuotationTemplateManager = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Quotation Template Manager</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Quotation Template Bucket</h2>
+          <p className="text-muted-foreground">Store and manage quotation templates for immediate use</p>
+        </div>
         <div className="flex gap-2">
           <Button onClick={createNewTemplate} variant="outline">
             <Plus className="h-4 w-4 mr-2" />
@@ -180,7 +183,7 @@ export const QuotationTemplateManager = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Template List Sidebar */}
         <Card className="p-4">
-          <h3 className="font-semibold mb-4">Available Templates</h3>
+          <h3 className="font-semibold mb-4">Template Bucket</h3>
           <div className="space-y-2">
             {templates.map((template, index) => (
               <div

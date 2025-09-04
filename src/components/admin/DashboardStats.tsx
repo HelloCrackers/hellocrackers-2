@@ -75,7 +75,7 @@ export const DashboardStats = () => {
             <div>
               <p className="text-sm text-muted-foreground">Total Revenue</p>
               <p className="text-2xl font-bold">₹{stats.totalRevenue.toLocaleString()}</p>
-              <p className="text-sm text-green-600">+12.5% from last month</p>
+              <p className="text-sm text-green-600">Live data from database</p>
             </div>
             <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
               <DollarSign className="h-6 w-6 text-green-600" />
@@ -125,31 +125,28 @@ export const DashboardStats = () => {
         </Card>
       </div>
 
-      {/* Additional Analytics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="p-6 text-center">
-          <TrendingUp className="h-12 w-12 mx-auto mb-4 text-green-600" />
-          <h3 className="font-semibold mb-2">Growth Rate</h3>
-          <p className="text-2xl font-bold text-green-600">+25%</p>
-          <p className="text-sm text-muted-foreground">This month</p>
-        </Card>
-
-        <Card className="p-6 text-center">
-          <BarChart className="h-12 w-12 mx-auto mb-4 text-blue-600" />
-          <h3 className="font-semibold mb-2">Conversion Rate</h3>
-          <p className="text-2xl font-bold text-blue-600">15.8%</p>
-          <p className="text-sm text-muted-foreground">Visitors to customers</p>
-        </Card>
-
-        <Card className="p-6 text-center">
-          <div className="h-12 w-12 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
-            <DollarSign className="h-6 w-6 text-purple-600" />
+      {/* Key Metrics */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="text-center">
+            <div className="h-12 w-12 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+              <DollarSign className="h-6 w-6 text-purple-600" />
+            </div>
+            <h4 className="font-semibold mb-2">Average Order Value</h4>
+            <p className="text-2xl font-bold text-purple-600">
+              ₹{Math.round(stats.totalRevenue / (stats.totalOrders || 1)).toLocaleString()}
+            </p>
+            <p className="text-sm text-muted-foreground">Per order</p>
           </div>
-          <h3 className="font-semibold mb-2">Avg Order Value</h3>
-          <p className="text-2xl font-bold text-purple-600">₹{Math.round(stats.totalRevenue / (stats.totalOrders || 1)).toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">Per order</p>
-        </Card>
-      </div>
+          <div className="text-center">
+            <Package className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+            <h4 className="font-semibold mb-2">Total Product Catalog</h4>
+            <p className="text-2xl font-bold text-blue-600">{stats.activeProducts}</p>
+            <p className="text-sm text-muted-foreground">Active products</p>
+          </div>
+        </div>
+      </Card>
 
       {/* Recent Orders */}
       <Card className="p-6">

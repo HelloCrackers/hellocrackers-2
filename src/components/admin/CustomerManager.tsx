@@ -110,12 +110,16 @@ export const CustomerManager = () => {
 
       {/* Customers List */}
       <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Customers Who Viewed and Booked Orders</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Track customers who have viewed products and placed orders using their mobile numbers
+        </p>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
                 <th className="text-left p-4">Customer</th>
-                <th className="text-left p-4">Contact</th>
+                <th className="text-left p-4">Mobile Number</th>
                 <th className="text-left p-4">Orders</th>
                 <th className="text-left p-4">Total Spent</th>
                 <th className="text-left p-4">Status</th>
@@ -135,18 +139,16 @@ export const CustomerManager = () => {
                       )}
                     </div>
                   </td>
-                  <td className="p-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-3 w-3" />
-                        <span className="truncate max-w-48">{customer.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="h-3 w-3" />
-                        <span>{customer.phone}</span>
-                      </div>
-                    </div>
-                  </td>
+                   <td className="p-4">
+                     <div className="flex items-center gap-2">
+                       <Phone className="h-4 w-4 text-blue-600" />
+                       <span className="font-mono font-semibold">{customer.phone}</span>
+                     </div>
+                     <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                       <Mail className="h-3 w-3" />
+                       <span className="truncate max-w-48">{customer.email}</span>
+                     </div>
+                   </td>
                   <td className="p-4">
                     <span className="font-semibold">{customer.total_orders}</span>
                   </td>

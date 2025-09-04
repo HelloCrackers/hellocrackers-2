@@ -52,13 +52,14 @@ export default function Products() {
     }
   };
 
-  const tabs = ["Family Crackers", "Adult Crackers", "Kids Crackers"];
+  const tabs = ["All Products", "Family Crackers", "Adult Crackers", "Kids Crackers"];
 
   // Filter and sort products by Product Code in ascending order
   const filteredProducts = products
     .filter(product => 
       product.status === 'active' && 
-      (activeTab === "Family Crackers" ? product.user_for === "Family" :
+      (activeTab === "All Products" ? true :
+       activeTab === "Family Crackers" ? product.user_for === "Family" :
        activeTab === "Adult Crackers" ? product.user_for === "Adult" :
        activeTab === "Kids Crackers" ? product.user_for === "Kids" : true)
     )

@@ -284,7 +284,10 @@ export const ChallanTemplateManager = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Challan Templates</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Challan Template Bucket</h2>
+          <p className="text-muted-foreground">Store and manage challan templates for immediate use</p>
+        </div>
         <Button onClick={() => setShowEditor(true)}>
           <Plus className="h-4 w-4 mr-2" />
           New Template
@@ -353,9 +356,9 @@ export const ChallanTemplateManager = () => {
           {templates.length === 0 && (
             <Card className="p-12 text-center">
               <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No Templates Found</h3>
+              <h3 className="text-lg font-semibold mb-2">Template Bucket</h3>
               <p className="text-muted-foreground mb-4">
-                Create your first challan template to get started.
+                Create challan templates for immediate use. All templates will be stored in your template bucket for quick access.
               </p>
               <Button onClick={() => setShowEditor(true)}>
                 <Plus className="h-4 w-4 mr-2" />
