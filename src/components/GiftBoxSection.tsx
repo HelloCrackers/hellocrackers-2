@@ -1,50 +1,46 @@
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { Gift, Star, Heart } from "lucide-react";
-import giftBox1000 from "@/assets/gift-box-1000.jpg";
-import giftBox3000 from "@/assets/gift-box-3000.jpg";
-import giftBox5000 from "@/assets/gift-box-5000.jpg";
+import { useSupabase, GiftBox } from "@/hooks/useSupabase";
 
 export const GiftBoxSection = () => {
   const navigate = useNavigate();
+  const supabaseHook = useSupabase();
+  const [giftBoxes, setGiftBoxes] = useState<GiftBox[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const giftBoxes = [
-    {
-      id: 1,
-      title: "₹1,000 Gift Box",
-      price: 1000,
-      originalPrice: 2500,
-      image: giftBox1000,
-      description: "Perfect starter pack for small celebrations",
-      features: ["Family-friendly crackers", "Sparklers included", "Safe for kids", "Free delivery"],
-      badge: "Popular",
-      badgeColor: "bg-brand-gold text-black"
-    },
-    {
-      id: 2,
-      title: "₹3,000 Gift Box",
-      price: 3000,
-      originalPrice: 7500,
-      image: giftBox3000,
-      description: "Complete celebration package for the whole family",
-      features: ["Premium assorted crackers", "Fancy fireworks", "Ground chakras", "Aerial shots"],
-      badge: "Best Value",
-      badgeColor: "bg-brand-red text-white"
-    },
-    {
-      id: 3,
-      title: "₹5,000 Gift Box",
-      price: 5000,
-      originalPrice: 12500,
-      image: giftBox5000,
-      description: "Luxury celebration box for grand festivities",
-      features: ["Deluxe cracker collection", "Professional grade", "Sky shots included", "Premium packaging"],
-      badge: "Premium",
-      badgeColor: "bg-brand-purple text-white"
+  useEffect(() => {
+    loadGiftBoxes();
+  }, []);
+
+  const loadGiftBoxes = async () => {
+    setLoading(true);
+    try {
+      const data = await supabaseHook.fetchGiftBoxes();
+      setGiftBoxes(data);
+    } catch (error) {
+      console.error('Error loading gift boxes:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-background to-muted">
+        <div className="container mx-auto px-4">
+          <div className="text-center">Loading gift boxes...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (giftBoxes.length === 0) {
+    return null; // Don't show section if no active gift boxes
+  }
 
   return (
     <section className="py-16 bg-gradient-to-br from-background to-muted">
@@ -74,11 +70,13 @@ export const GiftBoxSection = () => {
           {giftBoxes.map((box, index) => (
             <Card key={box.id} className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:scale-105">
               {/* Badge */}
-              <div className="absolute top-4 left-4 z-10">
-                <Badge className={`${box.badgeColor} font-bold shadow-lg`}>
-                  {box.badge}
-                </Badge>
-              </div>
+              {box.badge && (
+                <div className="absolute top-4 left-4 z-10">
+                  <Badge className={`${box.badge_color} font-bold shadow-lg`}>
+                    {box.badge}
+                  </Badge>
+                </div>
+              )}
 
               {/* Heart Icon */}
               <div className="absolute top-4 right-4 z-10">
@@ -90,7 +88,7 @@ export const GiftBoxSection = () => {
               {/* Image */}
               <div className="relative h-64 overflow-hidden">
                 <img
-                  src={box.image}
+                  src={box.image_url || '/placeholder.svg'}
                   alt={box.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
@@ -104,10 +102,10 @@ export const GiftBoxSection = () => {
 
                 {/* Price */}
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl font-bold text-brand-red">₹{box.price.toLocaleString()}</span>
-                  <span className="text-lg text-muted-foreground line-through">₹{box.originalPrice.toLocaleString()}</span>
+                  <span className="text-3xl font-bold text-brand-red">₹{box.final_rate.toLocaleString()}</span>
+                  <span className="text-lg text-muted-foreground line-through">₹{box.original_price.toLocaleString()}</span>
                   <Badge variant="outline" className="text-green-600 border-green-600">
-                    {Math.round((1 - box.price / box.originalPrice) * 100)}% OFF
+                    {box.discount}% OFF
                   </Badge>
                 </div>
 

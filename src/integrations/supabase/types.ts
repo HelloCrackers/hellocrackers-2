@@ -113,6 +113,60 @@ export type Database = {
         }
         Relationships: []
       }
+      gift_boxes: {
+        Row: {
+          badge: string | null
+          badge_color: string | null
+          created_at: string
+          description: string | null
+          discount: number | null
+          display_order: number | null
+          features: Json | null
+          final_rate: number | null
+          id: string
+          image_url: string | null
+          original_price: number
+          price: number
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          badge_color?: string | null
+          created_at?: string
+          description?: string | null
+          discount?: number | null
+          display_order?: number | null
+          features?: Json | null
+          final_rate?: number | null
+          id?: string
+          image_url?: string | null
+          original_price: number
+          price: number
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          badge_color?: string | null
+          created_at?: string
+          description?: string | null
+          discount?: number | null
+          display_order?: number | null
+          features?: Json | null
+          final_rate?: number | null
+          id?: string
+          image_url?: string | null
+          original_price?: number
+          price?: number
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       homepage_content: {
         Row: {
           content: Json

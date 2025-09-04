@@ -95,6 +95,24 @@ export interface PaymentSetting {
   updated_at: string;
 }
 
+export interface GiftBox {
+  id: string;
+  title: string;
+  price: number;
+  original_price: number;
+  final_rate: number;
+  discount: number;
+  image_url: string | null;
+  description: string | null;
+  features: string[];
+  badge: string | null;
+  badge_color: string;
+  display_order: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export const useSupabase = () => {
   const { toast } = useToast();
 
@@ -708,6 +726,104 @@ export const useSupabase = () => {
     // Homepage Content
     fetchHomepageContent,
     updateHomepageContent,
+    
+    // Gift Boxes
+    fetchGiftBoxes: async (): Promise<GiftBox[]> => {
+      try {
+        const { data, error } = await supabase
+          .from('gift_boxes')
+          .select('*')
+          .eq('status', 'active')
+          .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        
+        // Transform the data to ensure features is properly typed
+        return (data || []).map(item => ({
+          ...item,
+          features: Array.isArray(item.features) ? item.features.filter(f => typeof f === 'string') : []
+        })) as GiftBox[];
+      } catch (error) {
+        console.error('Error fetching gift boxes:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch gift boxes",
+          variant: "destructive",
+        });
+        return [];
+      }
+    },
+
+    createGiftBox: async (giftBoxData: any): Promise<boolean> => {
+      try {
+        const { error } = await supabase
+          .from('gift_boxes')
+          .insert(giftBoxData);
+
+        if (error) throw error;
+        toast({
+          title: "Success",
+          description: "Gift box created successfully",
+        });
+        return true;
+      } catch (error) {
+        console.error('Error creating gift box:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create gift box",
+          variant: "destructive",
+        });
+        return false;
+      }
+    },
+
+    updateGiftBox: async (id: string, giftBoxData: any): Promise<boolean> => {
+      try {
+        const { error } = await supabase
+          .from('gift_boxes')
+          .update(giftBoxData)
+          .eq('id', id);
+
+        if (error) throw error;
+        toast({
+          title: "Success",
+          description: "Gift box updated successfully",
+        });
+        return true;
+      } catch (error) {
+        console.error('Error updating gift box:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update gift box",
+          variant: "destructive",
+        });
+        return false;
+      }
+    },
+
+    deleteGiftBox: async (id: string): Promise<boolean> => {
+      try {
+        const { error } = await supabase
+          .from('gift_boxes')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        toast({
+          title: "Success",
+          description: "Gift box deleted successfully",
+        });
+        return true;
+      } catch (error) {
+        console.error('Error deleting gift box:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete gift box",
+          variant: "destructive",
+        });
+        return false;
+      }
+    },
     
     // Payment Settings
     fetchPaymentSettings,

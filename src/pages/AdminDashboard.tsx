@@ -11,6 +11,7 @@ import { EnhancedOrderManager } from "@/components/admin/EnhancedOrderManager";
 import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { HomepageEditor } from "@/components/admin/HomepageEditor";
+import { GiftBoxManager } from "@/components/admin/GiftBoxManager";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
 import { ChallanTemplateManagerV2 } from "@/components/admin/ChallanTemplateManagerV2";
 import { QuotationTemplateManagerV2 } from "@/components/admin/QuotationTemplateManagerV2";
@@ -36,7 +37,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10 lg:grid-cols-10">
+          <TabsList className="grid w-full grid-cols-11 lg:grid-cols-11">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -45,6 +46,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="challan">Challan</TabsTrigger>
             <TabsTrigger value="quotation">Quotation</TabsTrigger>
+            <TabsTrigger value="giftboxes">Gift Boxes</TabsTrigger>
             <TabsTrigger value="homepage">Homepage</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -89,6 +91,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="quotation">
             <QuotationTemplateManagerV2 />
+          </TabsContent>
+
+          <TabsContent value="giftboxes">
+            <GiftBoxManager />
           </TabsContent>
 
           <TabsContent value="homepage">
