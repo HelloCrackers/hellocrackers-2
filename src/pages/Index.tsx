@@ -6,6 +6,7 @@ import { GiftBoxSection } from "@/components/GiftBoxSection";
 import { Footer } from "@/components/Footer";
 import { StickyOrderButton } from "@/components/StickyOrderButton";
 import { CategoryNotification } from "@/components/CategoryNotification";
+import FeedbackSystem from "@/components/FeedbackSystem";
 
 const Index = () => {
   return (
@@ -23,6 +24,18 @@ const Index = () => {
       <CelebrationGallery />
       <GiftBoxSection />
       <TransportSection />
+      
+      {/* Customer Feedback Section */}
+      <div className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Customer Feedback</h2>
+            <p className="text-muted-foreground">Share your experience and read what others say about Hello Crackers</p>
+          </div>
+          <FeedbackSystem />
+        </div>
+      </div>
+      
       <Footer />
       <StickyOrderButton />
       <CategoryNotification />
