@@ -20,6 +20,7 @@ import { PaymentSettingsManager } from "@/components/admin/PaymentSettingsManage
 import { BulkUploadManager } from "@/components/admin/BulkUploadManager";
 import { ZipUploadManager } from "@/components/admin/ZipUploadManager";
 import { ContactManager } from "@/components/admin/ContactManager";
+import { PasswordManager } from "@/components/admin/PasswordManager";
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
@@ -51,6 +52,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="giftboxes">Gift Boxes</TabsTrigger>
             <TabsTrigger value="homepage">Homepage</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
+            <TabsTrigger value="password">Password</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -106,6 +108,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="contact">
             <ContactManager />
+          </TabsContent>
+
+          <TabsContent value="password">
+            <PasswordManager />
           </TabsContent>
 
           <TabsContent value="settings">

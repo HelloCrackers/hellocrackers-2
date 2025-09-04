@@ -12,8 +12,9 @@ import { useAuth } from '@/contexts/AuthContext';
 const Auth = () => {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [signupForm, setSignupForm] = useState({ email: '', password: '', name: '', confirmPassword: '' });
+  const [resetForm, setResetForm] = useState({ email: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const { login, signup } = useAuth();
+  const { login, signup, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -46,6 +47,15 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    await resetPassword(resetForm.email);
+    
+    setIsLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -53,9 +63,10 @@ const Auth = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="reset">Reset Password</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -100,8 +111,9 @@ const Auth = () => {
                         variant="link" 
                         className="text-sm text-primary"
                         onClick={() => {
-                          // TODO: Implement forgot password functionality
-                          alert('Forgot password functionality will be implemented with real authentication system');
+                          const tabsList = document.querySelector('[role="tablist"]');
+                          const resetTab = tabsList?.querySelector('[value="reset"]') as HTMLElement;
+                          resetTab?.click();
                         }}
                       >
                         Forgot your password?
@@ -177,6 +189,50 @@ const Auth = () => {
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? 'Creating Account...' : 'Sign Up'}
                     </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="reset">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Reset Password</CardTitle>
+                  <CardDescription>
+                    Enter your email address and we'll send you instructions to reset your password.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="reset-email">Email</Label>
+                      <Input
+                        id="reset-email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={resetForm.email}
+                        onChange={(e) => setResetForm({ email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? 'Sending Reset Email...' : 'Send Reset Email'}
+                    </Button>
+                    
+                    <div className="text-center">
+                      <Button 
+                        type="button" 
+                        variant="link" 
+                        className="text-sm text-primary"
+                        onClick={() => {
+                          const tabsList = document.querySelector('[role="tablist"]');
+                          const loginTab = tabsList?.querySelector('[value="login"]') as HTMLElement;
+                          loginTab?.click();
+                        }}
+                      >
+                        Back to Sign In
+                      </Button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>

@@ -16,6 +16,8 @@ interface AuthContextType {
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, name: string) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<boolean>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -122,6 +124,58 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return true;
   };
 
+  const resetPassword = async (email: string): Promise<boolean> => {
+    const foundUser = mockUsers.find(u => u.email === email);
+    
+    if (foundUser) {
+      // In a real app, this would send an email with reset link
+      // For demo purposes, we'll just show a success message
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your email for password reset instructions.",
+      });
+      return true;
+    } else {
+      toast({
+        title: "Email Not Found",
+        description: "No account found with this email address.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to change your password.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    const foundUser = mockUsers.find(u => u.email === user.email && u.password === currentPassword);
+    
+    if (foundUser) {
+      // Update password in mock users array
+      foundUser.password = newPassword;
+      
+      toast({
+        title: "Password Changed",
+        description: "Your password has been successfully updated.",
+      });
+      return true;
+    } else {
+      toast({
+        title: "Invalid Password",
+        description: "Current password is incorrect.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('hellocrackers_user');
@@ -142,6 +196,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isAdmin,
         login,
         signup,
+        resetPassword,
+        changePassword,
         logout,
       }}
     >
