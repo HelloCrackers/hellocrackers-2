@@ -212,7 +212,10 @@ const Contact = () => {
                   <p className="text-green-700">Get instant help on WhatsApp</p>
                 </div>
               </div>
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+              <Button 
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => window.open('https://wa.me/919042132123?text=Hi%20Hello%20Crackers!%20I%20need%20help%20with%20my%20order.', '_blank')}
+              >
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Chat on WhatsApp
               </Button>

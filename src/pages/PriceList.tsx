@@ -78,10 +78,7 @@ const PriceList = () => {
         [product.product_code]: ""
       }));
       
-      toast({
-        title: "Added to Cart",
-        description: `${product.product_name} (${qty} qty) added to cart`
-      });
+      // Remove toast notification for added products
     }
   };
 

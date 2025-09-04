@@ -37,8 +37,6 @@ const Index = () => {
       </div>
       
       <Footer />
-      <StickyOrderButton />
-      <CategoryNotification />
     </div>
   );
 };

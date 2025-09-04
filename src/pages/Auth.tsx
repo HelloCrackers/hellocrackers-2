@@ -94,6 +94,20 @@ const Auth = () => {
                       {isLoading ? 'Signing In...' : 'Sign In'}
                     </Button>
                     
+                    <div className="text-center">
+                      <Button 
+                        type="button" 
+                        variant="link" 
+                        className="text-sm text-primary"
+                        onClick={() => {
+                          // TODO: Implement forgot password functionality
+                          alert('Forgot password functionality will be implemented with real authentication system');
+                        }}
+                      >
+                        Forgot your password?
+                      </Button>
+                    </div>
+                    
                     <div className="mt-4 p-4 bg-muted rounded-lg">
                       <p className="text-sm font-medium mb-2">Demo Credentials:</p>
                       <p className="text-xs text-muted-foreground">

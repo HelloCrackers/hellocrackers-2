@@ -19,6 +19,7 @@ import { QuotationTemplateManagerV2 } from "@/components/admin/QuotationTemplate
 import { PaymentSettingsManager } from "@/components/admin/PaymentSettingsManager";
 import { BulkUploadManager } from "@/components/admin/BulkUploadManager";
 import { ZipUploadManager } from "@/components/admin/ZipUploadManager";
+import { ContactManager } from "@/components/admin/ContactManager";
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
@@ -38,7 +39,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-11 lg:grid-cols-11">
+          <TabsList className="grid w-full grid-cols-12 lg:grid-cols-12">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -49,6 +50,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="quotation">Quotation</TabsTrigger>
             <TabsTrigger value="giftboxes">Gift Boxes</TabsTrigger>
             <TabsTrigger value="homepage">Homepage</TabsTrigger>
+            <TabsTrigger value="contact">Contact</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -100,6 +102,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="homepage">
             <HomepageContentManager />
+          </TabsContent>
+
+          <TabsContent value="contact">
+            <ContactManager />
           </TabsContent>
 
           <TabsContent value="settings">

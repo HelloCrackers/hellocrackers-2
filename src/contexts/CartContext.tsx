@@ -55,10 +55,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     });
 
-    toast({
-      title: "Added to Cart",
-      description: `${product.productName} (${quantity} qty) added to cart`,
-    });
+    // Remove toast notification for added products
   };
 
   const removeFromCart = (productCode: string) => {

@@ -24,7 +24,8 @@ const FeedbackSystem = () => {
     comment: ""
   });
 
-  const feedbacks: Feedback[] = [
+
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([
     {
       id: "1",
       name: "Rajesh Kumar",
@@ -49,10 +50,23 @@ const FeedbackSystem = () => {
       date: "2024-11-10", 
       verified: true
     }
-  ];
+  ]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Add new feedback to the list
+    const newFeedback: Feedback = {
+      id: Date.now().toString(),
+      name: formData.name,
+      rating: rating,
+      comment: formData.comment,
+      date: new Date().toISOString().split('T')[0],
+      verified: false
+    };
+    
+    setFeedbacks(prev => [newFeedback, ...prev]);
+    
     console.log("Feedback submitted:", { ...formData, rating });
     // Reset form
     setFormData({ name: "", email: "", comment: "" });
@@ -154,7 +168,7 @@ const FeedbackSystem = () => {
       </Card>
 
       {/* Customer Reviews */}
-      <Card className="p-8">
+      <Card className="p-8" data-reviews-section>
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Customer Reviews</h2>
           <div className="flex items-center gap-4">
@@ -201,9 +215,23 @@ const FeedbackSystem = () => {
           ))}
         </div>
 
-        <div className="text-center mt-6">
+        <div className="flex justify-between items-center mt-6">
           <Button variant="outline">
             Load More Reviews
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="text-gray-500"
+            onClick={() => {
+              // Move reviews section up
+              const reviewsSection = document.querySelector('[data-reviews-section]');
+              if (reviewsSection) {
+                reviewsSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
+            Move to Top
           </Button>
         </div>
       </Card>
