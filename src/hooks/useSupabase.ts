@@ -126,7 +126,10 @@ export const useSupabase = () => {
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Create product error:', error);
+        throw error;
+      }
       
       toast({
         title: "Success",
@@ -135,9 +138,10 @@ export const useSupabase = () => {
       
       return data as Product;
     } catch (error) {
+      console.error('Create product failed:', error);
       toast({
         title: "Error",
-        description: "Failed to create product",
+        description: `Failed to create product: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
       return null;
@@ -153,7 +157,10 @@ export const useSupabase = () => {
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Update product error:', error);
+        throw error;
+      }
       
       toast({
         title: "Success",
@@ -162,9 +169,10 @@ export const useSupabase = () => {
       
       return data as Product;
     } catch (error) {
+      console.error('Update product failed:', error);
       toast({
         title: "Error",
-        description: "Failed to update product",
+        description: `Failed to update product: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
       return null;
@@ -178,7 +186,10 @@ export const useSupabase = () => {
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Delete product error:', error);
+        throw error;
+      }
       
       toast({
         title: "Success",
@@ -187,9 +198,10 @@ export const useSupabase = () => {
       
       return true;
     } catch (error) {
+      console.error('Delete product failed:', error);
       toast({
         title: "Error",
-        description: "Failed to delete product",
+        description: `Failed to delete product: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
       return false;
