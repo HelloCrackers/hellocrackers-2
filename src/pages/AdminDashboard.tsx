@@ -12,8 +12,8 @@ import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { HomepageEditor } from "@/components/admin/HomepageEditor";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
-import { ChallanTemplateManager } from "@/components/admin/ChallanTemplateManager";
-import { QuotationTemplateManager } from "@/components/admin/QuotationTemplateManager";
+import { ChallanTemplateManagerV2 } from "@/components/admin/ChallanTemplateManagerV2";
+import { QuotationTemplateManagerV2 } from "@/components/admin/QuotationTemplateManagerV2";
 import { PaymentSettingsManager } from "@/components/admin/PaymentSettingsManager";
 
 export default function AdminDashboard() {
@@ -72,11 +72,11 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="challan">
-            <ChallanTemplateManager />
+            <ChallanTemplateManagerV2 />
           </TabsContent>
 
           <TabsContent value="quotation">
-            <QuotationTemplateManager />
+            <QuotationTemplateManagerV2 />
           </TabsContent>
 
           <TabsContent value="homepage">

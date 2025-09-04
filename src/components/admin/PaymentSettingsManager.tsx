@@ -28,7 +28,6 @@ export const PaymentSettingsManager = () => {
       setSettings(prev => prev.map(s => 
         s.key === key ? { ...s, value } : s
       ));
-      toast({ title: "Setting updated successfully" });
     } catch (error) {
       toast({ title: "Failed to update setting", variant: "destructive" });
     }
@@ -60,6 +59,8 @@ export const PaymentSettingsManager = () => {
       if (success && url) {
         await updateSetting('payment_qr_code', url);
         toast({ title: "QR Code uploaded successfully" });
+      } else {
+        toast({ title: "Failed to upload QR code", variant: "destructive" });
       }
     } catch (error) {
       toast({ title: "Failed to upload QR code", variant: "destructive" });

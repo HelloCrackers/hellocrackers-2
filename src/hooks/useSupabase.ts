@@ -554,12 +554,61 @@ export const useSupabase = () => {
     }
   };
 
+  // Bulk operations
+  const bulkCreateProducts = async (products: Omit<Product, 'id' | 'created_at' | 'updated_at'>[]): Promise<{ successCount: number; errorCount: number; errors: string[] }> => {
+    let successCount = 0;
+    let errorCount = 0;
+    const errors: string[] = [];
+
+    for (const product of products) {
+      try {
+        // Check if product already exists
+        const { data: existing } = await supabase
+          .from('products')
+          .select('id')
+          .eq('product_code', product.product_code)
+          .single();
+
+        if (existing) {
+          // Update existing product
+          const { error } = await supabase
+            .from('products')
+            .update(product)
+            .eq('product_code', product.product_code);
+          
+          if (error) throw error;
+        } else {
+          // Create new product
+          const { error } = await supabase
+            .from('products')
+            .insert(product);
+          
+          if (error) throw error;
+        }
+        
+        successCount++;
+      } catch (error) {
+        errorCount++;
+        errors.push(`Error creating product ${product.product_code}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    toast({
+      title: successCount > 0 ? "Import Successful" : "Import Failed",
+      description: `${successCount} products imported, ${errorCount} errors`,
+      variant: errorCount > 0 ? "destructive" : "default"
+    });
+
+    return { successCount, errorCount, errors };
+  };
+
   return {
     // Products
     fetchProducts,
     createProduct,
     updateProduct,
     deleteProduct,
+    bulkCreateProducts,
     
     // Orders
     fetchOrders,
