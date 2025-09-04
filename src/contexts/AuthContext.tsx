@@ -18,6 +18,7 @@ interface AuthContextType {
   signup: (email: string, password: string, name: string) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
+  changeEmail: (currentPassword: string, newEmail: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -176,6 +177,53 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const changeEmail = async (currentPassword: string, newEmail: string): Promise<boolean> => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to change your email.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check if new email already exists
+    const existingUser = mockUsers.find(u => u.email === newEmail);
+    if (existingUser) {
+      toast({
+        title: "Email Change Failed",
+        description: "This email is already in use by another account.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    const foundUser = mockUsers.find(u => u.email === user.email && u.password === currentPassword);
+    
+    if (foundUser) {
+      // Update email in mock users array
+      foundUser.email = newEmail;
+      
+      // Update current user state
+      const updatedUser = { ...user, email: newEmail };
+      setUser(updatedUser);
+      localStorage.setItem('hellocrackers_user', JSON.stringify(updatedUser));
+      
+      toast({
+        title: "Email Changed",
+        description: "Your email has been successfully updated.",
+      });
+      return true;
+    } else {
+      toast({
+        title: "Invalid Password",
+        description: "Current password is incorrect.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('hellocrackers_user');
@@ -198,6 +246,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         signup,
         resetPassword,
         changePassword,
+        changeEmail,
         logout,
       }}
     >

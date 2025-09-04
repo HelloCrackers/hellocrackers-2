@@ -13,8 +13,9 @@ const Auth = () => {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [signupForm, setSignupForm] = useState({ email: '', password: '', name: '', confirmPassword: '' });
   const [resetForm, setResetForm] = useState({ email: '' });
+  const [changeEmailForm, setChangeEmailForm] = useState({ currentPassword: '', newEmail: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const { login, signup, resetPassword } = useAuth();
+  const { login, signup, resetPassword, changeEmail, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -56,6 +57,18 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const handleChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const success = await changeEmail(changeEmailForm.currentPassword, changeEmailForm.newEmail);
+    if (success) {
+      setChangeEmailForm({ currentPassword: '', newEmail: '' });
+    }
+    
+    setIsLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -63,10 +76,11 @@ const Auth = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="login">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
               <TabsTrigger value="reset">Reset Password</TabsTrigger>
+              <TabsTrigger value="change-email">Change Email</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -234,6 +248,63 @@ const Auth = () => {
                       </Button>
                     </div>
                   </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="change-email">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Change Email</CardTitle>
+                  <CardDescription>
+                    {user ? `Current email: ${user.email}` : 'Please sign in to change your email address.'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {user ? (
+                    <form onSubmit={handleChangeEmail} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password">Current Password</Label>
+                        <Input
+                          id="current-password"
+                          type="password"
+                          placeholder="Enter your current password"
+                          value={changeEmailForm.currentPassword}
+                          onChange={(e) => setChangeEmailForm({ ...changeEmailForm, currentPassword: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-email">New Email</Label>
+                        <Input
+                          id="new-email"
+                          type="email"
+                          placeholder="Enter your new email"
+                          value={changeEmailForm.newEmail}
+                          onChange={(e) => setChangeEmailForm({ ...changeEmailForm, newEmail: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? 'Changing Email...' : 'Change Email'}
+                      </Button>
+                    </form>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-muted-foreground mb-4">Please sign in to change your email address.</p>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => {
+                          const tabsList = document.querySelector('[role="tablist"]');
+                          const loginTab = tabsList?.querySelector('[value="login"]') as HTMLElement;
+                          loginTab?.click();
+                        }}
+                      >
+                        Go to Sign In
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
