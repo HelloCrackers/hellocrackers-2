@@ -54,7 +54,7 @@ export const ZipUploadManager = () => {
       const result: MediaProcessResult = await processZipFile(file, productCodes, removeBackgrounds);
       
       if (!result.success && result.unmappedCount > 0) {
-        generateErrorLog(result.errors, `zip_mapping_errors_${Date.now()}`);
+        generateErrorLog(result.errors, [], `zip_mapping_errors_${Date.now()}`);
         toast({
           title: "Upload Failed with Mapping Errors",
           description: `${result.unmappedCount} folders don't match product codes. Error log downloaded.`,

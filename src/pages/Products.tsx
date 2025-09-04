@@ -54,9 +54,15 @@ export default function Products() {
 
   const tabs = ["Family Crackers", "Adult Crackers", "Kids Crackers"];
 
-  const filteredProducts = products.filter(
-    product => activeTab.includes(product.user_for)
-  );
+  // Filter and sort products by Product Code in ascending order
+  const filteredProducts = products
+    .filter(product => 
+      product.status === 'active' && 
+      (activeTab === "Family Crackers" ? product.user_for === "Family" :
+       activeTab === "Adult Crackers" ? product.user_for === "Adult" :
+       activeTab === "Kids Crackers" ? product.user_for === "Kids" : true)
+    )
+    .sort((a, b) => a.product_code.localeCompare(b.product_code));
 
   const updateQuantity = (productCode: string, quantity: string) => {
     setQuantities(prev => ({

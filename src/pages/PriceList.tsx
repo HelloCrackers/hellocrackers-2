@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StickyOrderButton } from "@/components/StickyOrderButton";
@@ -7,81 +7,50 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Play, ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useSupabase, Product } from "@/hooks/useSupabase";
+import { exportToExcel } from "@/utils/fileProcessing";
 import helloCrackersBranded from "@/assets/hello-crackers-branded.png";
 
-// Same product data as Products page
-const priceListData = [
-  {
-    code: "H001",
-    image: "/api/placeholder/80/80",
-    video: "video-thumb.mp4",
-    name: "Flower Pots Deluxe",
-    userFor: "Family",
-    category: "Fancy Crackers",
-    content: "Pack of 5",
-    mrp: 500,
-    discount: 90,
-    finalRate: 50
-  },
-  {
-    code: "H002",
-    image: "/api/placeholder/80/80", 
-    video: "video-thumb2.mp4",
-    name: "Atom Bomb Premium",
-    userFor: "Adult",
-    category: "Bijili Crackers",
-    content: "Single piece",
-    mrp: 1000,
-    discount: 90,
-    finalRate: 100
-  },
-  {
-    code: "H003",
-    image: "/api/placeholder/80/80",
-    video: "video-thumb3.mp4",
-    name: "Safe Sparklers",
-    userFor: "Kids",
-    category: "Sparklers", 
-    content: "Pack of 10",
-    mrp: 200,
-    discount: 90,
-    finalRate: 20
-  },
-  {
-    code: "H004",
-    image: "/api/placeholder/80/80",
-    video: "video-thumb4.mp4",
-    name: "Twinkling Star Special",
-    userFor: "Adult",
-    category: "Twinkling Star",
-    content: "Pack of 3",
-    mrp: 800,
-    discount: 90,
-    finalRate: 80
-  },
-  {
-    code: "H005",
-    image: "/api/placeholder/80/80",
-    video: "video-thumb5.mp4", 
-    name: "Ground Chakra Mega",
-    userFor: "Family",
-    category: "Fancy Crackers",
-    content: "Single piece",
-    mrp: 600,
-    discount: 90,
-    finalRate: 60
-  }
-];
 
 const PriceList = () => {
   const [quantities, setQuantities] = useState<{[key: string]: string}>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  const { fetchProducts } = useSupabase();
 
-  const filteredData = priceListData.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      toast({
+        title: "Failed to load products",
+        description: "Please refresh the page to try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter and sort products by Product Code in ascending order
+  const filteredData = products
+    .filter(product => 
+      product.status === 'active' &&
+      (product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       product.product_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       product.category.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => a.product_code.localeCompare(b.product_code));
 
   const handleQuantityChange = (code: string, value: string) => {
     if (value === "" || /^\d+$/.test(value)) {
@@ -92,17 +61,60 @@ const PriceList = () => {
     }
   };
 
-  const addToCart = (item: any) => {
-    const qty = quantities[item.code] || "1";
-    console.log(`Adding ${qty} of ${item.name} to cart`);
+  const handleAddToCart = (product: Product) => {
+    const qty = parseInt(quantities[product.product_code] || "1");
+    if (qty > 0) {
+      addToCart({
+        productCode: product.product_code,
+        productName: product.product_name,
+        finalRate: product.final_rate,
+        image: product.image_url || helloCrackersBranded,
+        userFor: product.user_for
+      }, qty);
+      
+      // Reset quantity input
+      setQuantities(prev => ({
+        ...prev,
+        [product.product_code]: ""
+      }));
+      
+      toast({
+        title: "Added to Cart",
+        description: `${product.product_name} (${qty} qty) added to cart`
+      });
+    }
   };
 
   const exportToPDF = () => {
     console.log("Exporting to PDF...");
   };
 
-  const exportToExcel = () => {
-    console.log("Exporting to Excel...");
+  const handleExportToExcel = () => {
+    try {
+      const exportData = filteredData.map(product => ({
+        'Product Code': product.product_code,
+        'Product Name': product.product_name,
+        'Category': product.category,
+        'User For': product.user_for,
+        'Content': product.content || '',
+        'MRP (₹)': product.mrp,
+        'Discount %': product.discount,
+        'Final Rate (₹)': product.final_rate,
+        'Stock': product.stock
+      }));
+      
+      exportToExcel(exportData, 'price_list', 'Price List');
+      toast({
+        title: "Export Successful",
+        description: "Price list exported to Excel successfully"
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export price list",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -140,7 +152,7 @@ const PriceList = () => {
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={exportToExcel}>
+              <Button variant="outline" onClick={handleExportToExcel}>
                 <FileText className="h-4 w-4 mr-2" />
                 Export Excel
               </Button>
@@ -152,152 +164,168 @@ const PriceList = () => {
           </div>
         </Card>
 
-        {/* Mobile View - Cards */}
-        <div className="block md:hidden space-y-4">
-          {filteredData.map((item) => {
-            const amount = (parseInt(quantities[item.code] || "1") * item.finalRate);
-            
-            return (
-              <Card key={item.code} className="p-4">
-                <div className="flex gap-4">
-                  {/* Image & Video */}
-                  <div className="flex-shrink-0">
-                    <div className="relative w-20 h-20">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded" />
-                      <button className="absolute inset-0 flex items-center justify-center bg-black/20 rounded">
-                        <Play className="h-4 w-4 text-white" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Details */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-brand-purple text-white text-xs">{item.code}</Badge>
-                      <Badge variant="outline" className="text-xs">{item.userFor}</Badge>
-                    </div>
-                    
-                    <h3 className="font-semibold text-sm">{item.name}</h3>
-                    <div className="text-xs text-gray-600">{item.category} • {item.content}</div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <div>
-                        <span className="line-through text-gray-400">₹{item.mrp}</span>
-                        <span className="ml-2 font-semibold text-brand-red">₹{item.finalRate}</span>
-                      </div>
-                      <Badge className="bg-brand-red text-white text-xs">{item.discount}% OFF</Badge>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        placeholder="Qty"
-                        value={quantities[item.code] || ""}
-                        onChange={(e) => handleQuantityChange(item.code, e.target.value)}
-                        className="w-16 text-xs"
-                      />
-                      <Button 
-                        size="sm" 
-                        onClick={() => addToCart(item)}
-                        className="flex-1 bg-gradient-festive text-white text-xs"
-                        disabled={!quantities[item.code]}
-                      >
-                        <ShoppingCart className="h-3 w-3 mr-1" />
-                        ₹{amount}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Desktop/Tablet View - Table */}
-        <Card className="hidden md:block overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left p-3 font-semibold">Image</th>
-                  <th className="text-left p-3 font-semibold">Video</th>
-                  <th className="text-left p-3 font-semibold">Code</th>
-                  <th className="text-left p-3 font-semibold">Product Name</th>
-                  <th className="text-left p-3 font-semibold">User For</th>
-                  <th className="text-left p-3 font-semibold">Category</th>
-                  <th className="text-left p-3 font-semibold">Content</th>
-                  <th className="text-left p-3 font-semibold">MRP</th>
-                  <th className="text-left p-3 font-semibold">Discount</th>
-                  <th className="text-left p-3 font-semibold">Final Rate</th>
-                  <th className="text-left p-3 font-semibold">Quantity</th>
-                  <th className="text-left p-3 font-semibold">Amount</th>
-                  <th className="text-left p-3 font-semibold">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((item) => {
-                  const amount = (parseInt(quantities[item.code] || "1") * item.finalRate);
-                  
-                  return (
-                    <tr key={item.code} className="border-b hover:bg-gray-50">
-                      <td className="p-3">
-                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
-                      </td>
-                      <td className="p-3">
-                        <button className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center hover:bg-gray-200">
-                          <Play className="h-4 w-4 text-gray-600" />
-                        </button>
-                      </td>
-                      <td className="p-3">
-                        <Badge className="bg-brand-purple text-white">{item.code}</Badge>
-                      </td>
-                      <td className="p-3 font-medium">{item.name}</td>
-                      <td className="p-3">
-                        <Badge variant="outline" className={`${
-                          item.userFor === "Family" ? "border-brand-orange text-brand-orange" :
-                          item.userFor === "Kids" ? "border-brand-gold text-brand-gold" :
-                          "border-brand-purple text-brand-purple"
-                        }`}>
-                          {item.userFor}
-                        </Badge>
-                      </td>
-                      <td className="p-3 text-gray-600">{item.category}</td>
-                      <td className="p-3 text-gray-600">{item.content}</td>
-                      <td className="p-3">
-                        <span className="line-through text-gray-400">₹{item.mrp}</span>
-                      </td>
-                      <td className="p-3">
-                        <Badge className="bg-brand-red text-white">{item.discount}%</Badge>
-                      </td>
-                      <td className="p-3 font-semibold text-brand-red">₹{item.finalRate}</td>
-                      <td className="p-3">
-                        <Input
-                          type="text"
-                          placeholder="Enter qty"
-                          value={quantities[item.code] || ""}
-                          onChange={(e) => handleQuantityChange(item.code, e.target.value)}
-                          className="w-24"
-                        />
-                      </td>
-                      <td className="p-3 font-semibold">₹{amount}</td>
-                      <td className="p-3">
-                        <Button 
-                          size="sm"
-                          onClick={() => addToCart(item)}
-                          className="bg-gradient-festive text-white"
-                          disabled={!quantities[item.code]}
-                        >
-                          <ShoppingCart className="h-3 w-3 mr-1" />
-                          Add
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-orange"></div>
           </div>
-        </Card>
+        ) : (
+          <>
+            {/* Mobile View - Cards */}
+            <div className="block md:hidden space-y-4">
+              {filteredData.map((item) => {
+                const amount = (parseInt(quantities[item.product_code] || "1") * item.final_rate);
+            
+                return (
+                  <Card key={item.product_code} className="p-4">
+                    <div className="flex gap-4">
+                      {/* Image & Video */}
+                      <div className="flex-shrink-0">
+                        <div className="relative w-20 h-20">
+                          <img src={item.image_url || helloCrackersBranded} alt={item.product_name} className="w-full h-full object-cover rounded" />
+                          {item.video_url && (
+                            <button className="absolute inset-0 flex items-center justify-center bg-black/20 rounded">
+                              <Play className="h-4 w-4 text-white" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Details */}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-brand-purple text-white text-xs">{item.product_code}</Badge>
+                          <Badge variant="outline" className="text-xs">{item.user_for}</Badge>
+                        </div>
+                        
+                        <h3 className="font-semibold text-sm">{item.product_name}</h3>
+                        <div className="text-xs text-gray-600">{item.category} • {item.content || ''}</div>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <div>
+                            <span className="line-through text-gray-400">₹{item.mrp}</span>
+                            <span className="ml-2 font-semibold text-brand-red">₹{item.final_rate}</span>
+                          </div>
+                          <Badge className="bg-brand-red text-white text-xs">{item.discount}% OFF</Badge>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            placeholder="Qty"
+                            value={quantities[item.product_code] || ""}
+                            onChange={(e) => handleQuantityChange(item.product_code, e.target.value)}
+                            className="w-16 text-xs"
+                          />
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleAddToCart(item)}
+                            className="flex-1 bg-gradient-festive text-white text-xs"
+                            disabled={!quantities[item.product_code]}
+                          >
+                            <ShoppingCart className="h-3 w-3 mr-1" />
+                            ₹{amount}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Desktop/Tablet View - Table */}
+            <Card className="hidden md:block overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left p-3 font-semibold">Image</th>
+                      <th className="text-left p-3 font-semibold">Video</th>
+                      <th className="text-left p-3 font-semibold">Code</th>
+                      <th className="text-left p-3 font-semibold">Product Name</th>
+                      <th className="text-left p-3 font-semibold">User For</th>
+                      <th className="text-left p-3 font-semibold">Category</th>
+                      <th className="text-left p-3 font-semibold">Content</th>
+                      <th className="text-left p-3 font-semibold">Stock</th>
+                      <th className="text-left p-3 font-semibold">MRP</th>
+                      <th className="text-left p-3 font-semibold">Discount</th>
+                      <th className="text-left p-3 font-semibold">Final Rate</th>
+                      <th className="text-left p-3 font-semibold">Quantity</th>
+                      <th className="text-left p-3 font-semibold">Amount</th>
+                      <th className="text-left p-3 font-semibold">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredData.map((item) => {
+                      const amount = (parseInt(quantities[item.product_code] || "1") * item.final_rate);
+                  
+                      return (
+                        <tr key={item.product_code} className="border-b hover:bg-gray-50">
+                          <td className="p-3">
+                            <img src={item.image_url || helloCrackersBranded} alt={item.product_name} className="w-12 h-12 object-cover rounded" />
+                          </td>
+                          <td className="p-3">
+                            {item.video_url ? (
+                              <video src={item.video_url} className="w-10 h-10 rounded object-cover" muted />
+                            ) : (
+                              <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                                <Play className="h-4 w-4 text-gray-600" />
+                              </div>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            <Badge className="bg-brand-purple text-white">{item.product_code}</Badge>
+                          </td>
+                          <td className="p-3 font-medium">{item.product_name}</td>
+                          <td className="p-3">
+                            <Badge variant="outline" className={`${
+                              item.user_for === "Family" ? "border-brand-orange text-brand-orange" :
+                              item.user_for === "Kids" ? "border-brand-gold text-brand-gold" :
+                              "border-brand-purple text-brand-purple"
+                            }`}>
+                              {item.user_for}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-gray-600">{item.category}</td>
+                          <td className="p-3 text-gray-600">{item.content || ''}</td>
+                          <td className="p-3 text-gray-600">{item.stock}</td>
+                          <td className="p-3">
+                            <span className="line-through text-gray-400">₹{item.mrp}</span>
+                          </td>
+                          <td className="p-3">
+                            <Badge className="bg-brand-red text-white">{item.discount}%</Badge>
+                          </td>
+                          <td className="p-3 font-semibold text-brand-red">₹{item.final_rate}</td>
+                          <td className="p-3">
+                            <Input
+                              type="text"
+                              placeholder="Enter qty"
+                              value={quantities[item.product_code] || ""}
+                              onChange={(e) => handleQuantityChange(item.product_code, e.target.value)}
+                              className="w-24"
+                            />
+                          </td>
+                          <td className="p-3 font-semibold">₹{amount}</td>
+                          <td className="p-3">
+                            <Button 
+                              size="sm"
+                              onClick={() => handleAddToCart(item)}
+                              className="bg-gradient-festive text-white"
+                              disabled={!quantities[item.product_code]}
+                            >
+                              <ShoppingCart className="h-3 w-3 mr-1" />
+                              Add
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </>
+        )}
 
         {/* Summary */}
         <Card className="mt-8 p-6">

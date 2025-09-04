@@ -52,7 +52,7 @@ export const BulkUploadManager = () => {
       const result: ProcessResult = await processExcelFile(file);
       
       if (!result.success) {
-        generateErrorLog(result.errors, `excel_upload_errors_${Date.now()}`);
+        generateErrorLog(result.errors, [], `excel_upload_errors_${Date.now()}`);
         toast({
           title: "Upload Failed with Errors",
           description: `Found ${result.errorCount} errors. Error log downloaded automatically.`,
@@ -95,7 +95,7 @@ export const BulkUploadManager = () => {
           row: 0,
           field: 'Product',
           message: error
-        })), `bulk_create_errors_${Date.now()}`);
+        })), [], `bulk_create_errors_${Date.now()}`);
       }
 
     } catch (error) {
@@ -133,7 +133,7 @@ export const BulkUploadManager = () => {
       const result: MediaProcessResult = await processZipFile(file, productCodes, false);
       
       if (!result.success) {
-        generateErrorLog(result.errors, `zip_upload_errors_${Date.now()}`);
+        generateErrorLog(result.errors, [], `zip_upload_errors_${Date.now()}`);
         toast({
           title: "Upload Failed with Errors",
           description: `${result.unmappedCount} folders don't match product codes. Error log downloaded.`,

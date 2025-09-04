@@ -164,7 +164,7 @@ export const ProductManager = () => {
         const result = await processZipFile(files[0], productCodes, true); // Remove backgrounds
         
         if (!result.success) {
-          generateErrorLog(result.errors, `zip_upload_errors_${Date.now()}`);
+          generateErrorLog(result.errors, [], `zip_upload_errors_${Date.now()}`);
           toast({ 
             title: "Upload failed with errors", 
             description: `${result.unmappedCount} folders don't match product codes. Error log downloaded.`,
@@ -250,7 +250,7 @@ export const ProductManager = () => {
       const result = await processExcelFile(file);
       
       if (!result.success) {
-        generateErrorLog(result.errors, `excel_upload_errors_${Date.now()}`);
+        generateErrorLog(result.errors, [], `excel_upload_errors_${Date.now()}`);
         toast({ 
           title: "Upload failed with errors", 
           description: `${result.errorCount} errors found. Error log downloaded.`,

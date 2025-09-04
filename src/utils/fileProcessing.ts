@@ -283,32 +283,48 @@ export const exportToExcel = (data: any[], filename: string, sheetName = 'Sheet1
 };
 
 // Generate error log as downloadable text file
-export const generateErrorLog = (errors: ValidationError[], filename: string = 'upload_errors') => {
+export const generateErrorLog = (errors: ValidationError[], duplicates: string[] = [], filename: string = 'upload_errors') => {
   const timestamp = new Date().toLocaleString();
   let logContent = `Product Upload Error Log\n`;
   logContent += `Generated: ${timestamp}\n`;
-  logContent += `Total Errors: ${errors.length}\n\n`;
+  logContent += `Total Validation Errors: ${errors.length}\n`;
+  logContent += `Total Duplicate Product Codes: ${duplicates.length}\n\n`;
   logContent += `${'='.repeat(50)}\n\n`;
   
-  errors.forEach((error, index) => {
-    logContent += `Error ${index + 1}:\n`;
-    logContent += `Row: ${error.row}\n`;
-    logContent += `Field: ${error.field}\n`;
-    logContent += `Message: ${error.message}\n`;
-    if (error.value !== undefined) {
-      logContent += `Value: "${error.value}"\n`;
-    }
-    logContent += `\n${'-'.repeat(30)}\n\n`;
-  });
+  if (duplicates.length > 0) {
+    logContent += `DUPLICATE PRODUCT CODES (NOT UPLOADED):\n`;
+    logContent += `${'='.repeat(40)}\n`;
+    duplicates.forEach((code, index) => {
+      logContent += `${index + 1}. Product Code: "${code}" already exists in database\n`;
+    });
+    logContent += `\n${'-'.repeat(50)}\n\n`;
+  }
   
-  logContent += `Guidelines for fixing errors:\n`;
+  if (errors.length > 0) {
+    logContent += `VALIDATION ERRORS:\n`;
+    logContent += `${'='.repeat(20)}\n`;
+    errors.forEach((error, index) => {
+      logContent += `Error ${index + 1}:\n`;
+      logContent += `Row: ${error.row}\n`;
+      logContent += `Field: ${error.field}\n`;
+      logContent += `Message: ${error.message}\n`;
+      if (error.value !== undefined) {
+        logContent += `Value: "${error.value}"\n`;
+      }
+      logContent += `\n${'-'.repeat(30)}\n\n`;
+    });
+  }
+  
+  logContent += `GUIDELINES FOR FIXING ERRORS:\n`;
+  logContent += `${'='.repeat(30)}\n`;
   logContent += `1. Ensure all mandatory columns are filled\n`;
   logContent += `2. Product Code should only contain letters, numbers, hyphens, and underscores\n`;
-  logContent += `3. Price and Final Rate must be positive numbers\n`;
-  logContent += `4. Discount must be between 0-100\n`;
-  logContent += `5. Quantity must be a positive integer\n`;
-  logContent += `6. Final Rate = Price - (Price × Discount %)\n`;
-  logContent += `7. User For must be one of: Family, Adult, Kids\n`;
+  logContent += `3. Product Codes must be unique (duplicates will be skipped)\n`;
+  logContent += `4. Price and Final Rate must be positive numbers\n`;
+  logContent += `5. Discount must be between 0-100\n`;
+  logContent += `6. Quantity must be a positive integer\n`;
+  logContent += `7. Final Rate = Price - (Price × Discount %)\n`;
+  logContent += `8. User For must be one of: Family, Adult, Kids\n`;
   
   const blob = new Blob([logContent], { type: 'text/plain;charset=utf-8' });
   saveAs(blob, `${filename}.txt`);
