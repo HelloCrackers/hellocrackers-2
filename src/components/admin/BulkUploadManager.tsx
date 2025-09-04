@@ -22,7 +22,7 @@ import {
 } from "@/utils/fileProcessing";
 
 export const BulkUploadManager = () => {
-  const { fetchProducts, createProduct, uploadFile } = useSupabase();
+  const { fetchProducts, bulkCreateProducts, uploadFile } = useSupabase();
   const { toast } = useToast();
   
   const [processing, setProcessing] = useState(false);
@@ -61,40 +61,42 @@ export const BulkUploadManager = () => {
         return;
       }
 
-      let successCount = 0;
-      let errorCount = 0;
+      // Use the bulk create function for better performance
+      const productsToCreate = result.data?.map(product => ({
+        product_code: product.productCode,
+        product_name: product.productName,
+        category: product.category,
+        user_for: product.userFor,
+        mrp: product.mrp,
+        discount: product.discount,
+        final_rate: product.finalRate,
+        stock: product.stock,
+        description: product.description || '',
+        content: product.content || '',
+        image_url: '',
+        video_url: '',
+        rating: 0,
+        reviews_count: 0,
+        status: 'active' as 'active' | 'inactive',
+        featured: false
+      })) || [];
 
-      for (const product of result.data || []) {
-        try {
-          await createProduct({
-            product_code: product.productCode,
-            product_name: product.productName,
-            category: product.category,
-            user_for: product.userFor,
-            mrp: product.mrp,
-            discount: product.discount,
-            final_rate: product.finalRate,
-            stock: product.stock,
-            description: product.description || '',
-            content: product.content || '',
-            image_url: '',
-            video_url: '',
-            rating: 0,
-            reviews_count: 0,
-            status: 'active',
-            featured: false
-          });
-          successCount++;
-        } catch (error) {
-          errorCount++;
-          console.error(`Failed to create product ${product.productCode}:`, error);
-        }
-      }
-
+      const bulkResult = await bulkCreateProducts(productsToCreate);
+      
       toast({
         title: "Bulk Upload Completed",
-        description: `${successCount} products created successfully. ${errorCount} failed.`,
+        description: `${bulkResult.successCount} products created successfully. ${bulkResult.errorCount} failed.`,
+        variant: bulkResult.errorCount > 0 ? "destructive" : "default"
       });
+      
+      // Generate error log if there are errors
+      if (bulkResult.errors.length > 0) {
+        generateErrorLog(bulkResult.errors.map(error => ({
+          row: 0,
+          field: 'Product',
+          message: error
+        })), `bulk_create_errors_${Date.now()}`);
+      }
 
     } catch (error) {
       toast({

@@ -15,6 +15,8 @@ import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
 import { ChallanTemplateManagerV2 } from "@/components/admin/ChallanTemplateManagerV2";
 import { QuotationTemplateManagerV2 } from "@/components/admin/QuotationTemplateManagerV2";
 import { PaymentSettingsManager } from "@/components/admin/PaymentSettingsManager";
+import { BulkUploadManager } from "@/components/admin/BulkUploadManager";
+import { ZipUploadManager } from "@/components/admin/ZipUploadManager";
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
@@ -52,7 +54,17 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="products">
-            <EnhancedProductManager />
+            <div className="space-y-8">
+              <EnhancedProductManager />
+              <div className="border-t pt-8">
+                <h2 className="text-2xl font-bold mb-6">Bulk Upload</h2>
+                <BulkUploadManager />
+              </div>
+              <div className="border-t pt-8">
+                <h2 className="text-2xl font-bold mb-6">Media Upload</h2>
+                <ZipUploadManager />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="orders">

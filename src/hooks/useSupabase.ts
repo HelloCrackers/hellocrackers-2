@@ -294,25 +294,57 @@ export const useSupabase = () => {
         .select('*');
       
       if (error) throw error;
-      return data || [];
+      
+      // If no settings found, create default ones
+      if (!data || data.length === 0) {
+        const defaultSettings = [
+          { key: 'site_name', value: 'Hello Crackers', description: 'Website name' },
+          { key: 'site_tagline', value: 'Quality Fireworks for Every Celebration', description: 'Website tagline' },
+          { key: 'contact_phone', value: '+91 9876543210', description: 'Contact phone number' },
+          { key: 'contact_email', value: 'info@hellocrackers.com', description: 'Contact email' },
+          { key: 'minimum_order', value: '3000', description: 'Minimum order amount' },
+          { key: 'delivery_info', value: 'Free delivery above ₹5000', description: 'Delivery information' },
+          { key: 'factory_discount', value: '90', description: 'Factory discount percentage' }
+        ];
+        
+        for (const setting of defaultSettings) {
+          await supabase.from('site_settings').insert(setting);
+        }
+        
+        return await fetchSiteSettings();
+      }
+      
+      return data;
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch site settings",
-        variant: "destructive",
-      });
+      console.error('Error fetching site settings:', error);
       return [];
     }
   };
 
   const updateSiteSetting = async (key: string, value: string): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('site_settings')
-        .update({ value })
-        .eq('key', key);
+        .select('id')
+        .eq('key', key)
+        .single();
       
-      if (error) throw error;
+      if (error || !data) {
+        // Setting doesn't exist, create it
+        const { error: insertError } = await supabase
+          .from('site_settings')
+          .insert({ key, value });
+        
+        if (insertError) throw insertError;
+      } else {
+        // Setting exists, update it
+        const { error: updateError } = await supabase
+          .from('site_settings')
+          .update({ value, updated_at: new Date().toISOString() })
+          .eq('key', key);
+        
+        if (updateError) throw updateError;
+      }
       
       toast({
         title: "Success",
@@ -488,31 +520,64 @@ export const useSupabase = () => {
         .order('created_at');
       
       if (error) throw error;
-      return data || [];
+      
+      // If no settings found, create default ones
+      if (!data || data.length === 0) {
+        const defaultSettings = [
+          { key: 'razorpay_enabled', value: 'false', description: 'Enable manual payment mode' },
+          { key: 'payment_qr_code', value: '', description: 'UPI QR code image URL' },
+          { key: 'bank_name', value: '', description: 'Bank name for transfers' },
+          { key: 'account_number', value: '', description: 'Bank account number' },
+          { key: 'ifsc_code', value: '', description: 'Bank IFSC code' },
+          { key: 'branch_name', value: '', description: 'Bank branch name' },
+          { key: 'payment_instructions', value: 'Please complete your payment using the QR code or bank details provided. Once payment is done, confirmation will be updated by our team.', description: 'Payment instructions for customers' }
+        ];
+        
+        for (const setting of defaultSettings) {
+          await supabase.from('payment_settings').insert(setting);
+        }
+        
+        return await fetchPaymentSettings();
+      }
+      
+      return data;
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch payment settings",
-        variant: "destructive",
-      });
+      console.error('Error fetching payment settings:', error);
       return [];
     }
   };
 
   const updatePaymentSetting = async (key: string, value: string): Promise<void> => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('payment_settings')
-        .update({ value, updated_at: new Date().toISOString() })
-        .eq('key', key);
+        .select('id')
+        .eq('key', key)
+        .single();
       
-      if (error) throw error;
+      if (error || !data) {
+        // Setting doesn't exist, create it
+        const { error: insertError } = await supabase
+          .from('payment_settings')
+          .insert({ key, value });
+        
+        if (insertError) throw insertError;
+      } else {
+        // Setting exists, update it
+        const { error: updateError } = await supabase
+          .from('payment_settings')
+          .update({ value, updated_at: new Date().toISOString() })
+          .eq('key', key);
+        
+        if (updateError) throw updateError;
+      }
       
       toast({
         title: "Success",
         description: "Payment setting updated successfully",
       });
     } catch (error) {
+      console.error('Error updating payment setting:', error);
       toast({
         title: "Error",
         description: "Failed to update payment setting",

@@ -25,10 +25,17 @@ export const PaymentSettingsManager = () => {
   const updateSetting = async (key: string, value: string) => {
     try {
       await updatePaymentSetting(key, value);
-      setSettings(prev => prev.map(s => 
-        s.key === key ? { ...s, value } : s
-      ));
+      setSettings(prev => {
+        const existingSetting = prev.find(s => s.key === key);
+        if (existingSetting) {
+          return prev.map(s => s.key === key ? { ...s, value } : s);
+        } else {
+          // Add new setting if it doesn't exist
+          return [...prev, { id: Date.now().toString(), key, value, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }];
+        }
+      });
     } catch (error) {
+      console.error('Update setting error:', error);
       toast({ title: "Failed to update setting", variant: "destructive" });
     }
   };
