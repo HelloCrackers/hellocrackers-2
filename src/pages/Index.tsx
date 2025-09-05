@@ -4,9 +4,10 @@ import { CelebrationGallery } from "@/components/CelebrationGallery";
 import { TransportSection } from "@/components/TransportSection";
 import { GiftBoxSection } from "@/components/GiftBoxSection";
 import { Footer } from "@/components/Footer";
-import { StickyOrderButton } from "@/components/StickyOrderButton";
+
 import { CategoryNotification } from "@/components/CategoryNotification";
 import FeedbackSystem from "@/components/FeedbackSystem";
+import { EnhancedCartButton } from "@/components/EnhancedCartButton";
 
 const Index = () => {
   return (
@@ -37,6 +38,7 @@ const Index = () => {
       </div>
       
       <Footer />
+      <EnhancedCartButton />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { StickyOrderButton } from "@/components/StickyOrderButton";
+import { EnhancedCartButton } from "@/components/EnhancedCartButton";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -344,7 +344,7 @@ const PriceList = () => {
       </main>
 
       <Footer />
-      <StickyOrderButton />
+      <EnhancedCartButton />
     </div>
   );
 };

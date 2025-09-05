@@ -83,25 +83,64 @@ export const PaymentSettingsManager = () => {
         <p className="text-muted-foreground">Configure manual payment options and details</p>
       </div>
 
-      {/* Razorpay Manual Mode */}
+      {/* Razorpay Configuration */}
       <Card className="p-6">
         <div className="flex items-center gap-4 mb-4">
           <CreditCard className="h-6 w-6 text-blue-600" />
           <div>
-            <h3 className="text-lg font-semibold">Razorpay Manual Mode</h3>
-            <p className="text-sm text-muted-foreground">Enable manual payment confirmation for orders</p>
+            <h3 className="text-lg font-semibold">Razorpay Payment Gateway</h3>
+            <p className="text-sm text-muted-foreground">Configure Razorpay for online payments</p>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            checked={getSettingValue('razorpay_enabled') === 'true'}
-            onCheckedChange={(checked) => updateSetting('razorpay_enabled', checked ? 'true' : 'false')}
-          />
-          <Label>Enable Manual Payment Mode</Label>
+        
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={getSettingValue('razorpay_enabled') === 'true'}
+              onCheckedChange={(checked) => updateSetting('razorpay_enabled', checked ? 'true' : 'false')}
+            />
+            <Label>Enable Razorpay Payments</Label>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="razorpay-key">Razorpay Key ID</Label>
+              <Input
+                id="razorpay-key"
+                type="password"
+                value={getSettingValue('razorpay_key_id')}
+                onChange={(e) => updateSetting('razorpay_key_id', e.target.value)}
+                placeholder="Enter Razorpay Key ID"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="razorpay-secret">Razorpay Key Secret</Label>
+              <Input
+                id="razorpay-secret"
+                type="password"
+                value={getSettingValue('razorpay_key_secret')}
+                onChange={(e) => updateSetting('razorpay_key_secret', e.target.value)}
+                placeholder="Enter Razorpay Key Secret"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="razorpay-webhook">Webhook Secret (Optional)</Label>
+            <Input
+              id="razorpay-webhook"
+              type="password"
+              value={getSettingValue('razorpay_webhook_secret')}
+              onChange={(e) => updateSetting('razorpay_webhook_secret', e.target.value)}
+              placeholder="Enter Razorpay Webhook Secret"
+            />
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            When enabled, customers can pay online using Razorpay. Keep manual mode as fallback for failed transactions.
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground mt-2">
-          When enabled, customers will see manual payment options and admins can confirm payments manually.
-        </p>
       </Card>
 
       {/* QR Code Upload */}

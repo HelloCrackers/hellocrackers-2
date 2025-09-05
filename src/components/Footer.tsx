@@ -1,7 +1,44 @@
 import { Phone, Mail, MapPin, Clock, Shield, Star, Facebook, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useSupabase } from "@/hooks/useSupabase";
 
 export const Footer = () => {
+  const { fetchSiteSettings, fetchCategories } = useSupabase();
+  const [siteSettings, setSiteSettings] = useState<any>({});
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadFooterData();
+  }, []);
+
+  const loadFooterData = async () => {
+    try {
+      const [settingsData, categoriesData] = await Promise.all([
+        fetchSiteSettings(),
+        fetchCategories()
+      ]);
+
+      // Convert settings array to object
+      const settingsMap = settingsData.reduce((acc: any, setting: any) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      }, {});
+
+      setSiteSettings(settingsMap);
+      setCategories(categoriesData.filter(cat => cat.status === 'active'));
+    } catch (error) {
+      console.error('Error loading footer data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSetting = (key: string, defaultValue: string = '') => {
+    return siteSettings[key] || defaultValue;
+  };
+
   return (
     <footer className="bg-gradient-to-br from-gray-900 to-black text-white">
       {/* Main Footer Content */}
@@ -10,11 +47,10 @@ export const Footer = () => {
           {/* Company Info */}
           <div>
             <h3 className="text-2xl font-bold mb-4 bg-gradient-celebration bg-clip-text text-transparent">
-              Hello Crackers
+              {getSetting('business_name', 'Hello Crackers')}
             </h3>
             <p className="text-gray-300 mb-4">
-              Direct factory outlet offering premium quality crackers at 90% discount. 
-              Supreme Court compliant and safe for family celebrations.
+              {getSetting('description', 'Direct factory outlet offering premium quality crackers at 90% discount. Supreme Court compliant and safe for family celebrations.')}
             </p>
             <div className="flex items-center gap-2 mb-2">
               <Shield className="h-4 w-4 text-brand-gold" />
@@ -22,7 +58,7 @@ export const Footer = () => {
             </div>
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-brand-gold" />
-              <span className="text-sm">90% OFF Direct Factory Outlet</span>
+              <span className="text-sm">{getSetting('factory_discount', '90')}% OFF Direct Factory Outlet</span>
             </div>
           </div>
 
@@ -43,12 +79,25 @@ export const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4 text-brand-orange">Categories</h4>
             <ul className="space-y-3">
-              <li><a href="/products?filter=family" className="text-gray-300 hover:text-brand-orange transition-colors">Family Crackers</a></li>
-              <li><a href="/products?filter=adult" className="text-gray-300 hover:text-brand-orange transition-colors">Adult Crackers</a></li>
-              <li><a href="/products?filter=kids" className="text-gray-300 hover:text-brand-orange transition-colors">Kids Crackers</a></li>
-              <li><a href="/products?filter=sparklers" className="text-gray-300 hover:text-brand-orange transition-colors">Sparklers</a></li>
-              <li><a href="/products?filter=fancy" className="text-gray-300 hover:text-brand-orange transition-colors">Fancy Crackers</a></li>
-              <li><a href="/products?filter=bijili" className="text-gray-300 hover:text-brand-orange transition-colors">Bijili Crackers</a></li>
+              {categories.length > 0 ? (
+                categories.slice(0, 6).map((category) => (
+                  <li key={category.id}>
+                    <a 
+                      href={`/products?filter=${category.name.toLowerCase().replace(/\s+/g, '-')}`} 
+                      className="text-gray-300 hover:text-brand-orange transition-colors"
+                    >
+                      {category.name}
+                    </a>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li><a href="/products?filter=family" className="text-gray-300 hover:text-brand-orange transition-colors">Family Crackers</a></li>
+                  <li><a href="/products?filter=adult" className="text-gray-300 hover:text-brand-orange transition-colors">Adult Crackers</a></li>
+                  <li><a href="/products?filter=kids" className="text-gray-300 hover:text-brand-orange transition-colors">Kids Crackers</a></li>
+                  <li><a href="/products?filter=sparklers" className="text-gray-300 hover:text-brand-orange transition-colors">Sparklers</a></li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -58,23 +107,26 @@ export const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-brand-gold" />
-                <span className="text-gray-300">+91 98765 43210</span>
+                <span className="text-gray-300">{getSetting('phone1', '+91 98765 43210')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-brand-gold" />
-                <span className="text-gray-300">info@hellocrackers.com</span>
+                <span className="text-gray-300">{getSetting('email1', 'info@hellocrackers.com')}</span>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 text-brand-gold mt-1" />
                 <span className="text-gray-300">
-                  Factory Outlet,<br />
-                  Sivakasi, Tamil Nadu<br />
-                  India - 626123
+                  {getSetting('address', 'Factory Outlet,\nSivakasi, Tamil Nadu\nIndia - 626123').split('\n').map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < getSetting('address', 'Factory Outlet,\nSivakasi, Tamil Nadu\nIndia - 626123').split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="h-4 w-4 text-brand-gold" />
-                <span className="text-gray-300">24/7 Customer Support</span>
+                <span className="text-gray-300">{getSetting('business_hours', '24/7 Customer Support')}</span>
               </div>
             </div>
           </div>
@@ -98,30 +150,36 @@ export const Footer = () => {
             
             {/* Social Media Links */}
             <div className="flex justify-center gap-4">
-              <a 
-                href="https://facebook.com/hellocrackers" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
-              >
-                <Facebook className="h-5 w-5 text-white" />
-              </a>
-              <a 
-                href="https://instagram.com/hellocrackers" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full transition-colors"
-              >
-                <Instagram className="h-5 w-5 text-white" />
-              </a>
-              <a 
-                href="https://youtube.com/@hellocrackers" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
-              >
-                <Youtube className="h-5 w-5 text-white" />
-              </a>
+              {getSetting('facebook_url') && (
+                <a 
+                  href={getSetting('facebook_url')} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+                >
+                  <Facebook className="h-5 w-5 text-white" />
+                </a>
+              )}
+              {getSetting('instagram_url') && (
+                <a 
+                  href={getSetting('instagram_url')} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full transition-colors"
+                >
+                  <Instagram className="h-5 w-5 text-white" />
+                </a>
+              )}
+              {getSetting('youtube_url') && (
+                <a 
+                  href={getSetting('youtube_url')} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
+                >
+                  <Youtube className="h-5 w-5 text-white" />
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -132,7 +190,7 @@ export const Footer = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm">
-              © 2024 Hello Crackers. All rights reserved. | Supreme Court Compliant Crackers
+              © 2024 {getSetting('business_name', 'Hello Crackers')}. All rights reserved. | Supreme Court Compliant Crackers
             </div>
             <div className="flex items-center gap-4 mt-2 md:mt-0">
               <a href="/privacy" className="text-gray-400 hover:text-brand-orange text-sm transition-colors">Privacy Policy</a>

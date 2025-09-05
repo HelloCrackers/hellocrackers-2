@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Star, Play, ShoppingCart } from "lucide-react";
-import { StickyOrderButton } from "@/components/StickyOrderButton";
+import { EnhancedCartButton } from "@/components/EnhancedCartButton";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -400,7 +400,7 @@ export default function Products() {
         </AlertDialog>
       </div>
       <Footer />
-      <StickyOrderButton />
+      <EnhancedCartButton />
     </div>
   );
 }
