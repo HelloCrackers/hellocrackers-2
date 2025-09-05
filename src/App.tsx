@@ -15,7 +15,6 @@ import About from "./pages/About";
 import Order from "./pages/Order";
 import Cart from "./pages/Cart";
 import Billing from "./pages/Billing";
-import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
@@ -41,7 +40,6 @@ const App = () => {
                 <Route path="/order" element={<Order />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/billing" element={<Billing />} />
-                <Route path="/auth" element={<Auth />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/terms" element={<Terms />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
