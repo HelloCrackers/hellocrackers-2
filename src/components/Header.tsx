@@ -86,35 +86,26 @@ export const Header = () => {
               )}
             </Button>
 
-            {/* Auth Section */}
-            {isAuthenticated ? (
+            {/* Auth Section - Only show for admins */}
+            {isAuthenticated && isAdmin && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
                     <User className="h-4 w-4 mr-2" />
                     {user?.name}
-                    {isAdmin && <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Admin</span>}
+                    <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Admin</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate('/admin')}>
-                      Admin Panel
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem onClick={() => navigate('/sk.admin')}>
+                    Admin Panel
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={logout}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => navigate('/auth')}
-              >
-                Sign In
-              </Button>
             )}
           </div>
 
@@ -160,19 +151,18 @@ export const Header = () => {
               >
                 Cart ({getCartCount()})
               </button>
-              {isAuthenticated ? (
+              {/* Only show admin options for admins */}
+              {isAuthenticated && isAdmin && (
                 <>
-                  {isAdmin && (
-                    <button 
-                      className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
-                      onClick={() => {
-                        navigate('/admin');
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      Admin Panel
-                    </button>
-                  )}
+                  <button 
+                    className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
+                    onClick={() => {
+                      navigate('/sk.admin');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    Admin Panel
+                  </button>
                   <button 
                     className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
                     onClick={() => {
@@ -183,16 +173,6 @@ export const Header = () => {
                     Logout ({user?.name})
                   </button>
                 </>
-              ) : (
-                <button 
-                  className="text-gray-700 hover:text-brand-red font-medium py-2 transition-colors text-left w-full"
-                  onClick={() => {
-                    navigate('/auth');
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  Sign In
-                </button>
               )}
             </nav>
           </div>
