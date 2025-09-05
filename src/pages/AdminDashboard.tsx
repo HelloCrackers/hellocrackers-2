@@ -14,7 +14,7 @@ import { EnhancedProductManager } from "@/components/admin/EnhancedProductManage
 import { EnhancedOrderManager } from "@/components/admin/EnhancedOrderManager";
 import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
-import { HomepageEditor } from "@/components/admin/HomepageEditor";
+
 import { GiftBoxManager } from "@/components/admin/GiftBoxManager";
 import { HomepageContentManager } from "@/components/admin/HomepageContentManager";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
