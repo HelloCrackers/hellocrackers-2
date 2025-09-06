@@ -106,16 +106,18 @@ export const ChallanTemplateManagerV2 = () => {
 
   const loadTemplates = async () => {
     try {
-      const { data, error } = await supabase
+      // @ts-ignore - Temporary fix for deep type instantiation
+      const result = await supabase
         .from('challan_templates')
         .select('*')
+        .eq('type', 'challan')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
-      setTemplates(data as unknown as ChallanTemplate[] || []);
+      if (result.error) throw result.error;
       
-      if (data && data.length > 0) {
-        setSelectedTemplate(data[0] as unknown as ChallanTemplate);
+      if (result.data && result.data.length > 0) {
+        setTemplates(result.data as any);
+        setSelectedTemplate(result.data[0] as any);
       } else {
         setTemplates([defaultTemplate]);
         setSelectedTemplate(defaultTemplate);
@@ -142,20 +144,22 @@ export const ChallanTemplateManagerV2 = () => {
         type: 'challan'
       };
 
+      let result;
       if (isCreating) {
-        const { error } = await supabase
+        result = await supabase
           .from('challan_templates')
-          .insert([templateData]);
-        
-        if (error) throw error;
+          .insert([templateData])
+          .select();
       } else {
-        const { error } = await supabase
+        result = await supabase
           .from('challan_templates')
           .update(templateData)
-          .eq('id', selectedTemplate.id);
-        
-        if (error) throw error;
+          .eq('id', selectedTemplate.id)
+          .select();
       }
+      
+      if (result.error) throw result.error;
+      console.log('Template saved successfully:', result.data);
 
       toast({
         title: "Template Saved",
@@ -168,7 +172,7 @@ export const ChallanTemplateManagerV2 = () => {
       console.error('Save error:', error);
       toast({
         title: "Save Failed",
-        description: "Failed to save template. Please try again.",
+        description: `Failed to save template: ${error instanceof Error ? error.message : 'Please try again.'}`,
         variant: "destructive"
       });
     }
