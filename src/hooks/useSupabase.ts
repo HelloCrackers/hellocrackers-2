@@ -544,17 +544,41 @@ export const useSupabase = () => {
   // Payment settings functions
   const fetchPaymentSettings = async (): Promise<PaymentSetting[]> => {
     try {
+      console.log('Fetching payment settings from Supabase...');
+      
       const { data, error } = await supabase
         .from('payment_settings')
         .select('*')
         .order('created_at');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Payment settings table error:', error);
+        
+        // If table doesn't exist, return default settings
+        if (error.code === 'PGRST204' || error.message.includes('does not exist') || error.code === '42P01') {
+          console.log('Payment settings table does not exist, using defaults');
+          return [
+            { id: '1', key: 'razorpay_enabled', value: 'false', description: 'Enable Razorpay payment mode', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '2', key: 'razorpay_key_id', value: '', description: 'Razorpay Key ID', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '3', key: 'razorpay_key_secret', value: '', description: 'Razorpay Key Secret', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '4', key: 'payment_qr_code', value: '', description: 'UPI QR code image URL', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '5', key: 'bank_name', value: '', description: 'Bank name for transfers', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '6', key: 'account_number', value: '', description: 'Bank account number', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '7', key: 'ifsc_code', value: '', description: 'Bank IFSC code', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '8', key: 'branch_name', value: '', description: 'Bank branch name', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+            { id: '9', key: 'payment_instructions', value: 'Please complete your payment using the QR code or bank details provided. Once payment is done, confirmation will be updated by our team.', description: 'Payment instructions for customers', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+          ];
+        }
+        throw error;
+      }
       
-      // If no settings found, create default ones
+      // If no settings found, create default ones (table exists but is empty)
       if (!data || data.length === 0) {
+        console.log('Payment settings table is empty, creating defaults');
         const defaultSettings = [
-          { key: 'razorpay_enabled', value: 'false', description: 'Enable manual payment mode' },
+          { key: 'razorpay_enabled', value: 'false', description: 'Enable Razorpay payment mode' },
+          { key: 'razorpay_key_id', value: '', description: 'Razorpay Key ID' },
+          { key: 'razorpay_key_secret', value: '', description: 'Razorpay Key Secret' },
           { key: 'payment_qr_code', value: '', description: 'UPI QR code image URL' },
           { key: 'bank_name', value: '', description: 'Bank name for transfers' },
           { key: 'account_number', value: '', description: 'Bank account number' },
@@ -570,10 +594,28 @@ export const useSupabase = () => {
         return await fetchPaymentSettings();
       }
       
+      console.log('Payment settings fetched successfully:', data);
       return data;
     } catch (error) {
       console.error('Error fetching payment settings:', error);
-      return [];
+      toast({
+        title: "Database Connection Error", 
+        description: "Could not access payment settings. Using default values.",
+        variant: "destructive",
+      });
+      
+      // Return default settings if database access fails completely
+      return [
+        { id: '1', key: 'razorpay_enabled', value: 'false', description: 'Enable Razorpay payment mode', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '2', key: 'razorpay_key_id', value: '', description: 'Razorpay Key ID', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '3', key: 'razorpay_key_secret', value: '', description: 'Razorpay Key Secret', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '4', key: 'payment_qr_code', value: '', description: 'UPI QR code image URL', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '5', key: 'bank_name', value: '', description: 'Bank name for transfers', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '6', key: 'account_number', value: '', description: 'Bank account number', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '7', key: 'ifsc_code', value: '', description: 'Bank IFSC code', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '8', key: 'branch_name', value: '', description: 'Bank branch name', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+        { id: '9', key: 'payment_instructions', value: 'Please complete your payment using the QR code or bank details provided. Once payment is done, confirmation will be updated by our team.', description: 'Payment instructions for customers', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+      ];
     }
   };
 

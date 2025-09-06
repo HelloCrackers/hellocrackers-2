@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { useSupabase, PaymentSetting } from "@/hooks/useSupabase";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Save, CreditCard, QrCode, Building, FileText } from "lucide-react";
+import { RazorpaySettingsDebug } from "./RazorpaySettingsDebug";
 
 export const PaymentSettingsManager = () => {
   const { fetchPaymentSettings, updatePaymentSetting, uploadFile } = useSupabase();
@@ -97,6 +98,9 @@ export const PaymentSettingsManager = () => {
         <p className="text-muted-foreground">Configure manual payment options and details</p>
       </div>
 
+      {/* Diagnostics Tool */}
+      <RazorpaySettingsDebug />
+
       {/* Razorpay Configuration */}
       <Card className="p-6">
         <div className="flex items-center gap-4 mb-4">
@@ -111,9 +115,29 @@ export const PaymentSettingsManager = () => {
           <div className="flex items-center space-x-2">
             <Switch
               checked={getSettingValue('razorpay_enabled') === 'true'}
-              onCheckedChange={(checked) => updateSetting('razorpay_enabled', checked ? 'true' : 'false')}
+              onCheckedChange={async (checked) => {
+                try {
+                  console.log(`Toggling Razorpay enabled to: ${checked}`);
+                  await updateSetting('razorpay_enabled', checked ? 'true' : 'false');
+                  toast({
+                    title: checked ? "Razorpay Enabled" : "Razorpay Disabled",
+                    description: checked ? "Online payments are now active" : "Online payments are now disabled",
+                  });
+                } catch (error) {
+                  console.error('Failed to toggle Razorpay setting:', error);
+                  // Force reload settings to reset the switch state
+                  await loadSettings();
+                  toast({
+                    title: "Toggle Failed",
+                    description: "Could not update Razorpay setting. Please check database configuration.",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              disabled={loading}
             />
             <Label>Enable Razorpay Payments</Label>
+            {loading && <span className="text-sm text-muted-foreground">Loading...</span>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
