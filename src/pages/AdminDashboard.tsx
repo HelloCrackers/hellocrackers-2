@@ -10,12 +10,11 @@ import { ImprovedProductManager } from "@/components/admin/ImprovedProductManage
 import { EnhancedOrderManager } from "@/components/admin/EnhancedOrderManager";
 import { CustomerManager } from "@/components/admin/CustomerManager";
 import { CategoryManager } from "@/components/admin/CategoryManager";
+import { TemplateManager } from "@/components/admin/TemplateManager";
 
 import { GiftBoxManager } from "@/components/admin/GiftBoxManager";
 import { HomepageContentManager } from "@/components/admin/HomepageContentManager";
 import { SiteSettingsManager } from "@/components/admin/SiteSettingsManager";
-import { ChallanTemplateManagerV2 } from "@/components/admin/ChallanTemplateManagerV2";
-import { QuotationTemplateManagerV2 } from "@/components/admin/QuotationTemplateManagerV2";
 import { PaymentSettingsManager } from "@/components/admin/PaymentSettingsManager";
 import { BulkUploadManager } from "@/components/admin/BulkUploadManager";
 import { ZipUploadManager } from "@/components/admin/ZipUploadManager";
@@ -36,22 +35,21 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-13 lg:grid-cols-13">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="customers">Customers</TabsTrigger>
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
-            <TabsTrigger value="challan">Challan</TabsTrigger>
-            <TabsTrigger value="quotation">Quotation</TabsTrigger>
-            <TabsTrigger value="giftboxes">Gift Boxes</TabsTrigger>
-            <TabsTrigger value="homepage">Homepage</TabsTrigger>
-            <TabsTrigger value="contact">Contact</TabsTrigger>
-            <TabsTrigger value="countdown">Countdown</TabsTrigger>
-            <TabsTrigger value="images">Images</TabsTrigger>
-            <TabsTrigger value="password">Password</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-1 h-auto p-2">
+            <TabsTrigger value="dashboard" className="text-xs px-2 py-1">Dashboard</TabsTrigger>
+            <TabsTrigger value="products" className="text-xs px-2 py-1">Products</TabsTrigger>
+            <TabsTrigger value="customers" className="text-xs px-2 py-1">Customers</TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs px-2 py-1">Orders</TabsTrigger>
+            <TabsTrigger value="payments" className="text-xs px-2 py-1">Payments</TabsTrigger>
+            <TabsTrigger value="templates" className="text-xs px-2 py-1">Templates</TabsTrigger>
+            <TabsTrigger value="categories" className="text-xs px-2 py-1">Categories</TabsTrigger>
+            <TabsTrigger value="giftboxes" className="text-xs px-2 py-1">Gift Boxes</TabsTrigger>
+            <TabsTrigger value="homepage" className="text-xs px-2 py-1">Homepage</TabsTrigger>
+            <TabsTrigger value="contact" className="text-xs px-2 py-1">Contact</TabsTrigger>
+            <TabsTrigger value="countdown" className="text-xs px-2 py-1">Countdown</TabsTrigger>
+            <TabsTrigger value="images" className="text-xs px-2 py-1">Images</TabsTrigger>
+            <TabsTrigger value="password" className="text-xs px-2 py-1">Password</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs px-2 py-1">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -78,12 +76,8 @@ export default function AdminDashboard() {
             <PaymentSettingsManager />
           </TabsContent>
 
-          <TabsContent value="challan">
-            <ChallanTemplateManagerV2 />
-          </TabsContent>
-
-          <TabsContent value="quotation">
-            <QuotationTemplateManagerV2 />
+          <TabsContent value="templates">
+            <TemplateManager />
           </TabsContent>
 
           <TabsContent value="giftboxes">
