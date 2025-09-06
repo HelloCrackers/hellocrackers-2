@@ -20,7 +20,7 @@ import {
 import { useState } from "react";
 
 export default function Cart() {
-  const { cart, cartTotal, updateQuantity, removeFromCart, checkMinimumOrder } = useCart();
+  const { cart, cartTotal, updateQuantity, removeFromCart, clearCart, checkMinimumOrder } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showMinOrderDialog, setShowMinOrderDialog] = useState(false);
@@ -195,21 +195,26 @@ export default function Cart() {
                 </div>
               )}
 
-              <Button
-                onClick={handleCheckout}
-                className="w-full bg-gradient-festive text-white font-semibold py-3"
-                disabled={cart.length === 0}
-              >
-                Proceed to Billing
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => navigate('/products')}
-                className="w-full mt-3"
-              >
-                Continue Shopping
-              </Button>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    clearCart();
+                    navigate('/products');
+                  }}
+                  className="w-full border-red-500 text-red-500 hover:bg-red-50"
+                >
+                  Cancel
+                </Button>
+                
+                <Button
+                  onClick={handleCheckout}
+                  className="w-full bg-gradient-festive text-white font-semibold py-3"
+                  disabled={cart.length === 0}
+                >
+                  Checkout
+                </Button>
+              </div>
             </Card>
           </div>
         </div>
