@@ -24,6 +24,7 @@ export const PaymentSettingsManager = () => {
 
   const updateSetting = async (key: string, value: string) => {
     try {
+      console.log(`Attempting to update payment setting: ${key} = ${value}`);
       await updatePaymentSetting(key, value);
       setSettings(prev => {
         const existingSetting = prev.find(s => s.key === key);
@@ -34,9 +35,15 @@ export const PaymentSettingsManager = () => {
           return [...prev, { id: Date.now().toString(), key, value, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }];
         }
       });
+      console.log(`Successfully updated payment setting: ${key}`);
     } catch (error) {
       console.error('Update setting error:', error);
-      toast({ title: "Failed to update setting", variant: "destructive" });
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      toast({ 
+        title: "Failed to update payment setting", 
+        description: `Could not update ${key}. Please check database permissions.`,
+        variant: "destructive" 
+      });
     }
   };
 
@@ -47,10 +54,17 @@ export const PaymentSettingsManager = () => {
   const loadSettings = async () => {
     setLoading(true);
     try {
+      console.log('Loading payment settings...');
       const data = await fetchPaymentSettings();
+      console.log('Payment settings loaded:', data);
       setSettings(data);
     } catch (error) {
-      toast({ title: "Failed to load payment settings", variant: "destructive" });
+      console.error('Failed to load payment settings:', error);
+      toast({ 
+        title: "Database Connection Error", 
+        description: "Could not load payment settings. Check if payment_settings table exists.",
+        variant: "destructive" 
+      });
     } finally {
       setLoading(false);
     }

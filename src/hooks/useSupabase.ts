@@ -579,38 +579,69 @@ export const useSupabase = () => {
 
   const updatePaymentSetting = async (key: string, value: string): Promise<void> => {
     try {
+      console.log(`UpdatePaymentSetting called with: ${key} = ${value}`);
+      
+      // First check if the table exists and we have permissions
+      const { data: tableCheck, error: tableError } = await supabase
+        .from('payment_settings')
+        .select('count', { count: 'exact' })
+        .limit(1);
+      
+      if (tableError) {
+        console.error('Payment settings table access error:', tableError);
+        throw new Error(`Database table access error: ${tableError.message}`);
+      }
+      
+      console.log('Payment settings table accessible');
+      
       const { data, error } = await supabase
         .from('payment_settings')
         .select('id')
         .eq('key', key)
         .single();
       
-      if (error || !data) {
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+        console.error('Error checking existing setting:', error);
+        throw error;
+      }
+      
+      if (!data) {
+        console.log(`Creating new payment setting: ${key}`);
         // Setting doesn't exist, create it
         const { error: insertError } = await supabase
           .from('payment_settings')
           .insert({ key, value });
         
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          throw insertError;
+        }
+        console.log(`Successfully created payment setting: ${key}`);
       } else {
+        console.log(`Updating existing payment setting: ${key}`);
         // Setting exists, update it
         const { error: updateError } = await supabase
           .from('payment_settings')
           .update({ value, updated_at: new Date().toISOString() })
           .eq('key', key);
         
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error('Update error:', updateError);
+          throw updateError;
+        }
+        console.log(`Successfully updated payment setting: ${key}`);
       }
       
       toast({
         title: "Success",
-        description: "Payment setting updated successfully",
+        description: `Payment setting "${key}" updated successfully`,
       });
     } catch (error) {
       console.error('Error updating payment setting:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       toast({
-        title: "Error",
-        description: "Failed to update payment setting",
+        title: "Payment Setting Update Failed",
+        description: `Could not update "${key}": ${errorMessage}`,
         variant: "destructive",
       });
       throw error;
