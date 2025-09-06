@@ -41,7 +41,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="customers" className="text-xs px-2 py-1">Customers</TabsTrigger>
             <TabsTrigger value="orders" className="text-xs px-2 py-1">Orders</TabsTrigger>
             <TabsTrigger value="payments" className="text-xs px-2 py-1">Payments</TabsTrigger>
-            <TabsTrigger value="templates" className="text-xs px-2 py-1">Templates</TabsTrigger>
+            <TabsTrigger value="templates" className="text-xs px-2 py-1">Challan/Templates</TabsTrigger>
             <TabsTrigger value="categories" className="text-xs px-2 py-1">Categories</TabsTrigger>
             <TabsTrigger value="giftboxes" className="text-xs px-2 py-1">Gift Boxes</TabsTrigger>
             <TabsTrigger value="homepage" className="text-xs px-2 py-1">Homepage</TabsTrigger>
@@ -76,9 +76,9 @@ export default function AdminDashboard() {
             <PaymentSettingsManager />
           </TabsContent>
 
-          <TabsContent value="templates">
-            <TemplateManager />
-          </TabsContent>
+        <TabsContent value="templates">
+          <TemplateManager />
+        </TabsContent>
 
           <TabsContent value="giftboxes">
             <GiftBoxManager />

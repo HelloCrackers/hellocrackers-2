@@ -117,75 +117,11 @@ export const PaymentSettingsManager = () => {
             <Switch
               checked={getSettingValue('razorpay_enabled') === 'true'}
               onCheckedChange={async (checked) => {
-                setLoading(true);
-                try {
-                  console.log(`Toggling Razorpay enabled to: ${checked}`);
-                  
-                  // Direct Supabase operation with detailed error handling
-                  const { data: existing, error: selectError } = await supabase
-                    .from('payment_settings')
-                    .select('id')
-                    .eq('key', 'razorpay_enabled')
-                    .single();
-
-                  if (selectError && selectError.code !== 'PGRST116') {
-                    throw new Error(`Database select error: ${selectError.message}`);
-                  }
-
-                  const newValue = checked ? 'true' : 'false';
-                  
-                  if (!existing) {
-                    // Insert new record
-                    const { error: insertError } = await supabase
-                      .from('payment_settings')
-                      .insert({ key: 'razorpay_enabled', value: newValue });
-                    
-                    if (insertError) {
-                      throw new Error(`Insert failed: ${insertError.message}`);
-                    }
-                  } else {
-                    // Update existing record
-                    const { error: updateError } = await supabase
-                      .from('payment_settings')
-                      .update({ value: newValue, updated_at: new Date().toISOString() })
-                      .eq('key', 'razorpay_enabled');
-                    
-                    if (updateError) {
-                      throw new Error(`Update failed: ${updateError.message}`);
-                    }
-                  }
-
-                  // Update local state
-                  setSettings(prev => {
-                    const existingSetting = prev.find(s => s.key === 'razorpay_enabled');
-                    if (existingSetting) {
-                      return prev.map(s => s.key === 'razorpay_enabled' ? { ...s, value: newValue } : s);
-                    } else {
-                      return [...prev, { 
-                        id: Date.now().toString(), 
-                        key: 'razorpay_enabled', 
-                        value: newValue, 
-                        created_at: new Date().toISOString(), 
-                        updated_at: new Date().toISOString() 
-                      }];
-                    }
-                  });
-
-                  toast({
-                    title: checked ? "Razorpay Enabled" : "Razorpay Disabled",
-                    description: checked ? "Online payments are now active" : "Online payments are now disabled",
-                  });
-
-                } catch (error) {
-                  console.error('Failed to toggle Razorpay setting:', error);
-                  toast({
-                    title: "Toggle Failed",
-                    description: `Error: ${error instanceof Error ? error.message : 'Unknown database error'}`,
-                    variant: "destructive",
-                  });
-                } finally {
-                  setLoading(false);
-                }
+                await updateSetting('razorpay_enabled', checked ? 'true' : 'false');
+                toast({
+                  title: checked ? "Razorpay Enabled" : "Razorpay Disabled",
+                  description: checked ? "Online payments are now active" : "Online payments are now disabled",
+                });
               }}
               disabled={loading}
             />

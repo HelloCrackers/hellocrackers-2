@@ -84,30 +84,34 @@ export const GiftBoxManager = () => {
     }
   };
 
-  const calculateFinalRate = (price: number) => {
-    return Math.round(price);
+  const calculateFinalRate = (discountPrice: number) => {
+    return Math.round(discountPrice);
   };
 
-  const calculateDiscount = (price: number, originalPrice: number) => {
-    return Math.round((1 - price / originalPrice) * 100);
+  const calculateDiscount = (discountPrice: number, originalPrice: number) => {
+    return Math.round((1 - discountPrice / originalPrice) * 100);
   };
 
   const handleSave = async (id?: string) => {
     try {
-      const price = parseFloat(formData.price);
+      const discountPrice = parseFloat(formData.price);
       const originalPrice = parseFloat(formData.original_price);
       
-      if (price >= originalPrice) {
-        toast.error('Price must be less than original price');
+      if (discountPrice >= originalPrice) {
+        toast.error('Discount price must be less than original price');
         return;
       }
 
       const features = formData.features.split(',').map(f => f.trim()).filter(f => f);
+      const finalRate = calculateFinalRate(discountPrice);
+      const discount = calculateDiscount(discountPrice, originalPrice);
       
       const giftBoxData = {
         title: formData.title,
-        price: price,
+        price: discountPrice,
         original_price: originalPrice,
+        final_rate: finalRate,
+        discount: discount,
         image_url: formData.image_url || null,
         description: formData.description || null,
         features: features,
@@ -249,22 +253,22 @@ export const GiftBoxManager = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="price">Price * (Auto calculates final rate)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => handlePriceChange('price', e.target.value)}
-                  placeholder="1000"
-                />
-                {formData.price && formData.original_price && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Final Rate: ₹{calculateFinalRate(parseFloat(formData.price))} | 
-                    Discount: {calculateDiscount(parseFloat(formData.price), parseFloat(formData.original_price))}%
-                  </p>
-                )}
-              </div>
+                <div>
+                  <Label htmlFor="price">Discount Price * (Auto calculates final rate)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => handlePriceChange('price', e.target.value)}
+                    placeholder="1000"
+                  />
+                  {formData.price && formData.original_price && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Final Rate: ₹{calculateFinalRate(parseFloat(formData.price))} | 
+                      Discount: {calculateDiscount(parseFloat(formData.price), parseFloat(formData.original_price))}%
+                    </p>
+                  )}
+                </div>
 
               <div>
                 <Label htmlFor="original_price">Original Price *</Label>

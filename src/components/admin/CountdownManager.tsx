@@ -237,9 +237,10 @@ export const CountdownManager = () => {
         </Button>
       </Card>
 
-      {/* Quick Presets */}
+      {/* Quick Presets - Editable by Admin */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Quick Festival Presets</h3>
+        <h3 className="text-lg font-semibold mb-4">Editable Festival Presets</h3>
+        <p className="text-sm text-muted-foreground mb-4">Click any preset to load, then customize as needed</p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Button
@@ -252,7 +253,7 @@ export const CountdownManager = () => {
               description: "Premium crackers with 90% OFF for Diwali celebrations"
             }))}
           >
-            Diwali 2026
+            🪔 Diwali 2026
           </Button>
           
           <Button
@@ -265,7 +266,7 @@ export const CountdownManager = () => {
               description: "Year-end special offers on all cracker categories"
             }))}
           >
-            New Year 2026
+            🎊 New Year 2026
           </Button>
           
           <Button
