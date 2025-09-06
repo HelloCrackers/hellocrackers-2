@@ -195,16 +195,25 @@ export default function Cart() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <Button
                   variant="outline"
                   onClick={() => {
                     clearCart();
-                    navigate('/products');
+                    navigate('/');
+                    setTimeout(() => navigate('/products'), 100);
                   }}
                   className="w-full border-red-500 text-red-500 hover:bg-red-50"
                 >
                   Cancel
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/products')}
+                  className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white"
+                >
+                  Add Product
                 </Button>
                 
                 <Button

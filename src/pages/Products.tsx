@@ -287,8 +287,12 @@ export default function Products() {
                 
                 <div className="col-span-1">
                   <div className="text-center">
-                    <div className="font-bold text-brand-red">₹{getAmount(product.final_rate, product.product_code)}</div>
-                    <Button variant="cart" size="sm" className="mt-2 w-full" onClick={() => handleAddToCart(product)}>
+                    {quantities[product.product_code] && (
+                      <div className="text-sm text-gray-600 mb-1">
+                        ₹{product.final_rate} × {quantities[product.product_code]} = ₹{getAmount(product.final_rate, product.product_code)}
+                      </div>
+                    )}
+                    <Button variant="cart" size="sm" className="w-full" onClick={() => handleAddToCart(product)}>
                       <ShoppingCart className="h-4 w-4" />
                     </Button>
                   </div>
@@ -363,7 +367,11 @@ export default function Products() {
                          </div>
                        </div>
                       <div className="text-right flex-1">
-                        <div className="font-bold text-brand-red text-lg">₹{getAmount(product.final_rate, product.product_code)}</div>
+                        {quantities[product.product_code] && (
+                          <div className="text-sm text-gray-600 mb-1">
+                            ₹{product.final_rate} × {quantities[product.product_code]} = ₹{getAmount(product.final_rate, product.product_code)}
+                          </div>
+                        )}
                         <Button variant="cart" size="sm" className="mt-1" onClick={() => handleAddToCart(product)}>
                           <ShoppingCart className="h-4 w-4 mr-1" />
                           Add to Cart
