@@ -1,133 +1,150 @@
-import { Phone, Mail, MapPin, Clock, Shield, Star, Facebook, Instagram, Youtube } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { useSupabase } from "@/hooks/useSupabase";
+import { useToast } from "@/hooks/use-toast";
 
 export const Footer = () => {
-  const { fetchSiteSettings, fetchCategories } = useSupabase();
-  const [siteSettings, setSiteSettings] = useState<any>({});
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [siteSettings, setSiteSettings] = useState<Record<string, string>>({});
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    loadFooterData();
+    loadSiteSettings();
   }, []);
 
-  const loadFooterData = async () => {
+  const loadSiteSettings = async () => {
     try {
-      const [settingsData, categoriesData] = await Promise.all([
-        fetchSiteSettings(),
-        fetchCategories()
-      ]);
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*');
 
-      // Convert settings array to object
-      const settingsMap = settingsData.reduce((acc: any, setting: any) => {
+      if (error) throw error;
+
+      const settingsMap = data.reduce((acc: any, setting: any) => {
         acc[setting.key] = setting.value;
         return acc;
       }, {});
 
       setSiteSettings(settingsMap);
-      setCategories(categoriesData.filter(cat => cat.status === 'active'));
     } catch (error) {
-      console.error('Error loading footer data:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error loading site settings:', error);
     }
   };
 
-  const getSetting = (key: string, defaultValue: string = '') => {
+  const getSetting = (key: string, defaultValue = "") => {
     return siteSettings[key] || defaultValue;
   };
 
+  const handleNewsletterSubscription = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) return;
+
+    setNewsletterLoading(true);
+    try {
+      // Store newsletter subscription in site_settings with timestamp
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({
+          key: `newsletter_${Date.now()}`,
+          value: newsletterEmail.trim(),
+          description: 'Newsletter subscription'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Successfully subscribed!",
+        description: "You'll receive updates about our latest offers and new arrivals.",
+      });
+      setNewsletterEmail("");
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later or contact us directly.",
+        variant: "destructive"
+      });
+    } finally {
+      setNewsletterLoading(false);
+    }
+  };
+
   return (
-    <footer className="bg-gradient-to-br from-gray-900 to-black text-white">
-      {/* Main Footer Content */}
+    <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
-          <div>
-            <h3 className="text-2xl font-bold mb-4 bg-gradient-celebration bg-clip-text text-transparent">
+          <div className="md:col-span-2">
+            <h3 className="text-2xl font-bold mb-4 text-brand-gold">
               {getSetting('business_name', 'Hello Crackers')}
             </h3>
             <p className="text-gray-300 mb-4">
               {getSetting('description', 'Direct factory outlet offering premium quality crackers at 90% discount. Supreme Court compliant and safe for family celebrations.')}
             </p>
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="h-4 w-4 text-brand-gold" />
-              <span className="text-sm">Supreme Court Compliant</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-brand-gold" />
-              <span className="text-sm">{getSetting('factory_discount', '90')}% OFF Direct Factory Outlet</span>
+            <p className="text-sm text-gray-400">
+              {getSetting('tagline', 'Premium Diwali Crackers at Factory Prices')}
+            </p>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <MapPin className="h-4 w-4 text-brand-orange" />
+                <span className="text-sm text-gray-300">
+                  {getSetting('address', 'Tamil Nadu, India')}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="h-4 w-4 text-brand-orange" />
+                <div className="text-sm text-gray-300">
+                  <div>{getSetting('phone1', '+91 9042132123')}</div>
+                  {getSetting('phone2') && <div>{getSetting('phone2')}</div>}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Mail className="h-4 w-4 text-brand-orange" />
+                <div className="text-sm text-gray-300">
+                  <div>{getSetting('email1', 'Hellocrackers.official@gmail.com')}</div>
+                  {getSetting('email2') && <div>{getSetting('email2')}</div>}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="h-4 w-4 text-brand-orange" />
+                <span className="text-sm text-gray-300">
+                  {getSetting('business_hours', '9:00 AM - 7:00 PM, Monday to Saturday')}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-brand-orange">Quick Links</h4>
-            <ul className="space-y-3">
-              <li><a href="/" className="text-gray-300 hover:text-brand-orange transition-colors">Home</a></li>
-              <li><a href="/products" className="text-gray-300 hover:text-brand-orange transition-colors">Products</a></li>
-              <li><a href="/price-list" className="text-gray-300 hover:text-brand-orange transition-colors">Price List</a></li>
-              <li><a href="/track-order" className="text-gray-300 hover:text-brand-orange transition-colors">Track Order</a></li>
-              <li><a href="/about" className="text-gray-300 hover:text-brand-orange transition-colors">About Us</a></li>
-              <li><a href="/contact" className="text-gray-300 hover:text-brand-orange transition-colors">Contact</a></li>
-            </ul>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 text-brand-orange">Categories</h4>
-            <ul className="space-y-3">
-              {categories.length > 0 ? (
-                categories.slice(0, 6).map((category) => (
-                  <li key={category.id}>
-                    <a 
-                      href={`/products?filter=${category.name.toLowerCase().replace(/\s+/g, '-')}`} 
-                      className="text-gray-300 hover:text-brand-orange transition-colors"
-                    >
-                      {category.name}
-                    </a>
-                  </li>
-                ))
-              ) : (
-                <>
-                  <li><a href="/products?filter=family" className="text-gray-300 hover:text-brand-orange transition-colors">Family Crackers</a></li>
-                  <li><a href="/products?filter=adult" className="text-gray-300 hover:text-brand-orange transition-colors">Adult Crackers</a></li>
-                  <li><a href="/products?filter=kids" className="text-gray-300 hover:text-brand-orange transition-colors">Kids Crackers</a></li>
-                  <li><a href="/products?filter=sparklers" className="text-gray-300 hover:text-brand-orange transition-colors">Sparklers</a></li>
-                </>
-              )}
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 text-brand-orange">Contact Info</h4>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-brand-gold" />
-                <span className="text-gray-300">{getSetting('phone1', '+91 98765 43210')}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-brand-gold" />
-                <span className="text-gray-300">{getSetting('email1', 'info@hellocrackers.com')}</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 text-brand-gold mt-1" />
-                <span className="text-gray-300">
-                  {getSetting('address', 'Factory Outlet,\nSivakasi, Tamil Nadu\nIndia - 626123').split('\n').map((line, index) => (
-                    <span key={index}>
-                      {line}
-                      {index < getSetting('address', 'Factory Outlet,\nSivakasi, Tamil Nadu\nIndia - 626123').split('\n').length - 1 && <br />}
-                    </span>
-                  ))}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-brand-gold" />
-                <span className="text-gray-300">{getSetting('business_hours', '24/7 Customer Support')}</span>
-              </div>
+            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <div className="space-y-2">
+              <Link to="/products" className="block text-gray-300 hover:text-brand-orange transition-colors">
+                Products
+              </Link>
+              <Link to="/price-list" className="block text-gray-300 hover:text-brand-orange transition-colors">
+                Price List
+              </Link>
+              <Link to="/about" className="block text-gray-300 hover:text-brand-orange transition-colors">
+                About Us
+              </Link>
+              <Link to="/contact" className="block text-gray-300 hover:text-brand-orange transition-colors">
+                Contact
+              </Link>
+              <Link to="/track-order" className="block text-gray-300 hover:text-brand-orange transition-colors">
+                Track Order
+              </Link>
+              <Link to="/terms" className="block text-gray-300 hover:text-brand-orange transition-colors">
+                Terms & Conditions
+              </Link>
             </div>
           </div>
         </div>
@@ -137,16 +154,19 @@ export const Footer = () => {
           <div className="text-center">
             <h4 className="text-xl font-semibold mb-3">Stay Updated with Latest Offers</h4>
             <p className="text-gray-300 mb-4">Get notified about new arrivals and exclusive discounts</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
+            <form onSubmit={handleNewsletterSubscription} className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
               <input 
                 type="email" 
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-brand-orange"
+                required
               />
-              <Button variant="festive" className="px-6">
-                Subscribe
+              <Button type="submit" variant="festive" className="px-6" disabled={newsletterLoading}>
+                {newsletterLoading ? 'Subscribing...' : 'Subscribe'}
               </Button>
-            </div>
+            </form>
             
             {/* Social Media Links */}
             <div className="flex justify-center gap-4">

@@ -2,44 +2,93 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Clock, Truck, Shield, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import familyCelebrationHero from "@/assets/family-celebration-hero.jpg";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState({
-    days: 15,
-    hours: 7,
-    minutes: 32,
-    seconds: 18
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  const [countdownSettings, setCountdownSettings] = useState({
+    title: "Limited Time Offer Ends In:",
+    target_date: "",
+    is_active: true
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        let { days, hours, minutes, seconds } = prev;
+    loadCountdownSettings();
+  }, []);
+
+  useEffect(() => {
+    if (!countdownSettings.target_date) return;
+
+    const calculateTimeLeft = () => {
+      const targetDate = new Date(countdownSettings.target_date).getTime();
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
         
-        if (seconds > 0) {
-          seconds--;
-        } else if (minutes > 0) {
-          minutes--;
-          seconds = 59;
-        } else if (hours > 0) {
-          hours--;
-          minutes = 59;
-          seconds = 59;
-        } else if (days > 0) {
-          days--;
-          hours = 23;
-          minutes = 59;
-          seconds = 59;
-        }
-        
-        return { days, hours, minutes, seconds };
-      });
-    }, 1000);
+        setTimeLeft({ days, hours, minutes, seconds });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [countdownSettings.target_date]);
+
+  const loadCountdownSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .in('key', ['countdown_title', 'countdown_target_date', 'countdown_is_active']);
+
+      if (error) throw error;
+
+      const settingsMap = data.reduce((acc: any, setting: any) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      }, {});
+
+      if (settingsMap.countdown_target_date) {
+        setCountdownSettings({
+          title: settingsMap.countdown_title || "Limited Time Offer Ends In:",
+          target_date: settingsMap.countdown_target_date,
+          is_active: settingsMap.countdown_is_active !== 'false'
+        });
+      } else {
+        // Default to Diwali 2026 if no settings found
+        const defaultDate = "2026-11-01";
+        setCountdownSettings({
+          title: "Diwali 2026 Sale Ends In:",
+          target_date: defaultDate,
+          is_active: true
+        });
+      }
+    } catch (error) {
+      console.error('Error loading countdown settings:', error);
+      // Fallback to default date
+      const defaultDate = "2026-11-01";
+      setCountdownSettings({
+        title: "Diwali 2026 Sale Ends In:",
+        target_date: defaultDate,
+        is_active: true
+      });
+    }
+  };
   
   return (
     <section className="relative bg-gradient-hero text-white overflow-hidden">
@@ -104,8 +153,9 @@ export const HeroSection = () => {
             </div>
 
             {/* Countdown Timer */}
+            {countdownSettings.is_active && (
             <div className="mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-lg inline-block">
-              <p className="text-sm font-medium mb-2">Limited Time Offer Ends In:</p>
+              <p className="text-sm font-medium mb-2">{countdownSettings.title}</p>
               <div className="flex gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-brand-gold">{String(timeLeft.days).padStart(2, '0')}</div>
@@ -125,6 +175,7 @@ export const HeroSection = () => {
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           {/* Hero Image */}
