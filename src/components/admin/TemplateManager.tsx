@@ -1,80 +1,77 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Receipt, Download, Eye } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { ChallanTemplateManagerV2 } from "./ChallanTemplateManagerV2";
-import { QuotationTemplateManagerV2 } from "./QuotationTemplateManagerV2";
+import { EnhancedAvailableTemplates } from "./EnhancedAvailableTemplates";
+
+type Template = {
+  id: string;
+  name: string;
+  type: 'challan';
+  is_default: boolean;
+  thumbnail_url?: string;
+  created_at: string;
+  updated_at: string;
+  template_data: any;
+};
 
 export const TemplateManager = () => {
+  const [activeTab, setActiveTab] = useState("available");
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+
+  const handleEditTemplate = (template: Template) => {
+    setEditingTemplate(template);
+    setActiveTab("challan");
+  };
+
+  const handlePreviewTemplate = (template: Template) => {
+    setEditingTemplate(template);
+    setActiveTab("challan");
+  };
+
+  const handleCreateNew = () => {
+    setEditingTemplate(null);
+    setActiveTab("challan");
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">Template Manager</h2>
-        <p className="text-muted-foreground">Manage Challan and Quotation templates</p>
+        <p className="text-muted-foreground">Manage Challan templates with auto-update functionality</p>
       </div>
 
-      {/* Available Templates Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Receipt className="h-8 w-8 text-blue-600" />
-            <div>
-              <h3 className="text-lg font-semibold">Challan Templates</h3>
-              <p className="text-sm text-muted-foreground">Professional delivery challans</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <div className="flex items-center gap-2 text-sm">
-              <Eye className="h-4 w-4" />
-              <span>Preview Available</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Download className="h-4 w-4" />
-              <span>PDF Export</span>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center gap-4 mb-4">
-            <FileText className="h-8 w-8 text-green-600" />
-            <div>
-              <h3 className="text-lg font-semibold">Quotation Templates</h3>
-              <p className="text-sm text-muted-foreground">Professional price quotes</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <div className="flex items-center gap-2 text-sm">
-              <Eye className="h-4 w-4" />
-              <span>Preview Available</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Download className="h-4 w-4" />
-              <span>PDF Export</span>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Template Managers */}
-      <Tabs defaultValue="challan" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="available" className="flex items-center gap-2">
+            <Receipt className="h-4 w-4" />
+            Available Templates
+          </TabsTrigger>
           <TabsTrigger value="challan" className="flex items-center gap-2">
             <Receipt className="h-4 w-4" />
             Challan Templates
           </TabsTrigger>
-          <TabsTrigger value="quotation" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Quotation Templates
-          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="challan">
-          <ChallanTemplateManagerV2 />
+        <TabsContent value="available">
+          <EnhancedAvailableTemplates 
+            onEditTemplate={handleEditTemplate}
+            onPreviewTemplate={handlePreviewTemplate}
+            onCreateNew={handleCreateNew}
+          />
         </TabsContent>
 
-        <TabsContent value="quotation">
-          <QuotationTemplateManagerV2 />
+        <TabsContent value="challan">
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-medium text-blue-800 mb-2">✨ Auto-Update Feature</h4>
+              <p className="text-sm text-blue-700">
+                New challan templates are automatically added to your Available Templates list. 
+                Create or save a template below and it will instantly appear in your template library.
+              </p>
+            </div>
+            <ChallanTemplateManagerV2 />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

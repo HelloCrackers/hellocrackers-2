@@ -52,6 +52,7 @@ interface ChallanTemplate {
 }
 
 export const ChallanTemplateManagerV2 = () => {
+  const { supabase } = useSupabase();
   const { toast } = useToast();
   const [templates, setTemplates] = useState<ChallanTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<ChallanTemplate | null>(null);
@@ -104,16 +105,58 @@ export const ChallanTemplateManagerV2 = () => {
   }, []);
 
   const loadTemplates = async () => {
-    // For now, use default template - implement Supabase integration later
-    setTemplates([defaultTemplate]);
-    setSelectedTemplate(defaultTemplate);
+    try {
+      const { data, error } = await supabase
+        .from('challan_templates')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setTemplates(data as unknown as ChallanTemplate[] || []);
+      
+      if (data && data.length > 0) {
+        setSelectedTemplate(data[0] as unknown as ChallanTemplate);
+      } else {
+        setTemplates([defaultTemplate]);
+        setSelectedTemplate(defaultTemplate);
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+      setTemplates([defaultTemplate]);
+      setSelectedTemplate(defaultTemplate);
+    }
   };
 
   const handleSaveTemplate = async () => {
     if (!selectedTemplate) return;
 
     try {
-      // Implement Supabase save logic here
+      // Generate thumbnail from preview
+      const thumbnail = await generateThumbnail();
+      
+      const templateData = {
+        name: selectedTemplate.name,
+        template_data: selectedTemplate.template_data,
+        is_default: selectedTemplate.is_default,
+        thumbnail_url: thumbnail,
+        type: 'challan'
+      };
+
+      if (isCreating) {
+        const { error } = await supabase
+          .from('challan_templates')
+          .insert([templateData]);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('challan_templates')
+          .update(templateData)
+          .eq('id', selectedTemplate.id);
+        
+        if (error) throw error;
+      }
+
       toast({
         title: "Template Saved",
         description: "Challan template has been updated successfully.",
@@ -122,12 +165,32 @@ export const ChallanTemplateManagerV2 = () => {
       setIsCreating(false);
       loadTemplates();
     } catch (error) {
+      console.error('Save error:', error);
       toast({
         title: "Save Failed",
         description: "Failed to save template. Please try again.",
         variant: "destructive"
       });
     }
+  };
+
+  const generateThumbnail = async (): Promise<string> => {
+    try {
+      const { default: html2canvas } = await import('html2canvas');
+      const previewElement = document.querySelector('.template-preview');
+      
+      if (previewElement) {
+        const canvas = await html2canvas(previewElement as HTMLElement, {
+          scale: 0.5,
+          width: 400,
+          height: 300
+        });
+        return canvas.toDataURL('image/png');
+      }
+    } catch (error) {
+      console.error('Thumbnail generation failed:', error);
+    }
+    return '';
   };
 
   const createNewTemplate = () => {
@@ -442,7 +505,7 @@ export const ChallanTemplateManagerV2 = () => {
               <Card className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Template Preview</h3>
                 
-                <div className="border rounded p-6 bg-white text-black" style={{ fontFamily: 'Arial, sans-serif' }}>
+                <div className="border rounded p-6 bg-white text-black template-preview" style={{ fontFamily: 'Arial, sans-serif' }}>
                   {/* Header */}
                   <div className="text-center mb-6">
                     <h1 className="text-2xl font-bold">DELIVERY CHALLAN</h1>
