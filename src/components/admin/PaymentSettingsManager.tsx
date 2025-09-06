@@ -137,7 +137,57 @@ export const PaymentSettingsManager = () => {
             />
           </div>
 
-          <p className="text-sm text-muted-foreground">
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-medium text-blue-800 mb-2">Test Payment Gateway</h4>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={async () => {
+                  const testMode = getSettingValue('razorpay_test_mode') !== 'false';
+                  await updateSetting('razorpay_test_mode', testMode ? 'false' : 'true');
+                  toast({ 
+                    title: testMode ? "Switched to Live Mode" : "Switched to Test Mode",
+                    description: testMode ? "Real payments will be processed" : "Test payments only" 
+                  });
+                }}
+              >
+                {getSettingValue('razorpay_test_mode') !== 'false' ? '🧪 Test Mode' : '🔴 Live Mode'}
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  // Create test payment
+                  if (typeof window !== 'undefined' && window.Razorpay) {
+                    const options = {
+                      key: getSettingValue('razorpay_key_id'),
+                      amount: 100, // ₹1 in paisa
+                      currency: 'INR',
+                      name: 'Hello Crackers - Test',
+                      description: 'Test Payment',
+                      handler: function(response: any) {
+                        toast({ title: "Test Payment Successful", description: `Payment ID: ${response.razorpay_payment_id}` });
+                      },
+                      modal: {
+                        ondismiss: function() {
+                          toast({ title: "Test Payment Cancelled", variant: "destructive" });
+                        }
+                      }
+                    };
+                    const rzp = new (window as any).Razorpay(options);
+                    rzp.open();
+                  } else {
+                    toast({ title: "Razorpay not loaded", description: "Please refresh the page", variant: "destructive" });
+                  }
+                }}
+              >
+                Test Payment (₹1)
+              </Button>
+            </div>
+          </div>
+
+          <p className="text-sm text-muted-foreground mt-4">
             When enabled, customers can pay online using Razorpay. Keep manual mode as fallback for failed transactions.
           </p>
         </div>

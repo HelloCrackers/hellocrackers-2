@@ -52,33 +52,50 @@ class PaymentService {
   async createRazorpayOrder(orderData: OrderPaymentData): Promise<any> {
     const settings = await this.getPaymentSettings();
     
-    if (!settings.razorpayEnabled || !settings.razorpayKeyId || !settings.razorpayKeySecret) {
-      throw new Error("Razorpay is not properly configured");
+    if (!settings.razorpayEnabled) {
+      throw new Error("Razorpay payments are currently disabled");
+    }
+    
+    if (!settings.razorpayKeyId || !settings.razorpayKeySecret) {
+      throw new Error("Razorpay credentials not configured properly");
     }
 
-    // In a real implementation, this would make an API call to your backend
-    // which would then create a Razorpay order using the Razorpay API
-    // For now, we'll simulate this
-    const mockRazorpayOrder = {
-      id: `order_${Date.now()}`,
-      entity: "order",
-      amount: orderData.amount * 100, // Amount in paisa
-      amount_paid: 0,
-      amount_due: orderData.amount * 100,
-      currency: orderData.currency,
-      receipt: orderData.orderId,
-      offer_id: null,
-      status: "created",
-      attempts: 0,
-      notes: {
-        order_id: orderData.orderId,
-        customer_name: orderData.customerName,
-        customer_email: orderData.customerEmail,
-      },
-      created_at: Math.floor(Date.now() / 1000)
-    };
+    try {
+      // In a real implementation, this would make an API call to your backend
+      // which would then create a Razorpay order using the Razorpay API
+      // For now, we'll simulate this with better error handling
+      const mockRazorpayOrder = {
+        id: `order_${Date.now()}`,
+        entity: "order",
+        amount: orderData.amount * 100, // Amount in paisa
+        amount_paid: 0,
+        amount_due: orderData.amount * 100,
+        currency: orderData.currency,
+        receipt: orderData.orderId,
+        offer_id: null,
+        status: "created",
+        attempts: 0,
+        notes: {
+          order_id: orderData.orderId,
+          customer_name: orderData.customerName,
+          customer_email: orderData.customerEmail,
+        },
+        created_at: Math.floor(Date.now() / 1000)
+      };
 
-    return mockRazorpayOrder;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Random success/failure for testing (remove in production)
+      if (Math.random() > 0.1) { // 90% success rate
+        return mockRazorpayOrder;
+      } else {
+        throw new Error("Failed to create Razorpay order - API error");
+      }
+    } catch (error) {
+      console.error('Razorpay order creation error:', error);
+      throw new Error(`Failed to create payment order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async verifyPayment(paymentId: string, orderId: string, signature: string): Promise<boolean> {

@@ -47,14 +47,34 @@ export const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
+        toast({
+          title: "Payment Error",
+          description: "Failed to load Razorpay payment gateway. Please try again.",
+          variant: "destructive",
+        });
         throw new Error("Failed to load Razorpay SDK");
       }
 
       // Get Razorpay settings
       const settings = await fetchPaymentSettings();
       const razorpayKeyId = settings.find(s => s.key === 'razorpay_key_id')?.value;
+      const razorpayEnabled = settings.find(s => s.key === 'razorpay_enabled')?.value === 'true';
       
+      if (!razorpayEnabled) {
+        toast({
+          title: "Payment Unavailable",
+          description: "Online payments are currently disabled. Please contact support.",
+          variant: "destructive",
+        });
+        throw new Error("Razorpay payments are disabled");
+      }
+
       if (!razorpayKeyId) {
+        toast({
+          title: "Configuration Error",
+          description: "Payment gateway not properly configured. Please contact support.",
+          variant: "destructive",
+        });
         throw new Error("Razorpay Key ID not configured");
       }
 
@@ -74,18 +94,37 @@ export const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
           color: "#F97316", // brand-orange
         },
         handler: function (response: any) {
+          toast({
+            title: "Payment Successful",
+            description: "Your payment has been processed successfully!",
+          });
           onSuccess(response.razorpay_payment_id, response.razorpay_order_id);
         },
         modal: {
           ondismiss: function () {
+            toast({
+              title: "Payment Cancelled",
+              description: "Payment was cancelled. You can try again or choose manual payment.",
+              variant: "destructive",
+            });
             onError(new Error("Payment cancelled by user"));
           },
         },
       };
 
       const razorpay = new window.Razorpay(options);
+      razorpay.on('payment.failed', function (response: any) {
+        toast({
+          title: "Payment Failed",
+          description: `Payment failed: ${response.error.description}. Please try again.`,
+          variant: "destructive",
+        });
+        onError(new Error(`Payment failed: ${response.error.description}`));
+      });
+
       razorpay.open();
     } catch (error) {
+      console.error('Razorpay initialization error:', error);
       onError(error);
     }
   };
