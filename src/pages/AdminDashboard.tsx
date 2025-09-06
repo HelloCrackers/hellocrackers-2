@@ -26,6 +26,7 @@ import { ZipUploadManager } from "@/components/admin/ZipUploadManager";
 import { ContactManager } from "@/components/admin/ContactManager";
 import { CountdownManager } from "@/components/admin/CountdownManager";
 import { PasswordManager } from "@/components/admin/PasswordManager";
+import { ImageUploadManager } from "@/components/admin/ImageUploadManager";
 
 export default function AdminDashboard() {
   const { user, isAdmin, login } = useAuth();
@@ -106,7 +107,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-12 lg:grid-cols-12">
+          <TabsList className="grid w-full grid-cols-13 lg:grid-cols-13">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -119,6 +120,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="homepage">Homepage</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
             <TabsTrigger value="countdown">Countdown</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="password">Password</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -179,6 +181,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="countdown">
             <CountdownManager />
+          </TabsContent>
+
+          <TabsContent value="images">
+            <ImageUploadManager />
           </TabsContent>
 
           <TabsContent value="password">

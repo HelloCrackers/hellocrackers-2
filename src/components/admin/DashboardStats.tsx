@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSupabase } from "@/hooks/useSupabase";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   BarChart, Users, Package, ShoppingCart, DollarSign, 
-  TrendingUp, Eye, FileText 
+  TrendingUp, Eye, FileText, Mail 
 } from "lucide-react";
 
 export const DashboardStats = () => {
@@ -16,7 +17,8 @@ export const DashboardStats = () => {
     activeProducts: 0,
     totalCustomers: 0,
     pendingOrders: 0,
-    recentOrders: [] as any[]
+    recentOrders: [] as any[],
+    subscribersCount: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +30,14 @@ export const DashboardStats = () => {
           fetchOrders(),
           fetchCustomers()
         ]);
+
+        // Get newsletter subscribers count
+        const { data: subscribersData, error: subscribersError } = await supabase
+          .from('site_settings')
+          .select('*')
+          .like('key', 'newsletter_%');
+
+        const subscribersCount = subscribersError ? 0 : subscribersData?.length || 0;
 
         const totalRevenue = orders
           .filter(order => order.payment_status === 'paid')
@@ -42,7 +52,8 @@ export const DashboardStats = () => {
           activeProducts: products.filter(p => p.status === 'active').length,
           totalCustomers: customers.length,
           pendingOrders,
-          recentOrders
+          recentOrders,
+          subscribersCount
         });
       } catch (error) {
         console.error('Failed to load dashboard stats:', error);
@@ -69,7 +80,7 @@ export const DashboardStats = () => {
   return (
     <div className="space-y-6">
       {/* Main Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -120,6 +131,19 @@ export const DashboardStats = () => {
             </div>
             <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
               <Users className="h-6 w-6 text-orange-600" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Newsletter Subscribers</p>
+              <p className="text-2xl font-bold">{stats.subscribersCount}</p>
+              <p className="text-sm text-pink-600">Active subscriptions</p>
+            </div>
+            <div className="h-12 w-12 bg-pink-100 rounded-full flex items-center justify-center">
+              <Mail className="h-6 w-6 text-pink-600" />
             </div>
           </div>
         </Card>

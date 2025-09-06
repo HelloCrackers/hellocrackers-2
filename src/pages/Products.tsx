@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Star, Play, ShoppingCart } from "lucide-react";
 import { EnhancedCartButton } from "@/components/EnhancedCartButton";
+import { StickyProductDescription } from "@/components/StickyProductDescription";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +29,7 @@ export default function Products() {
   const [showMinOrderDialog, setShowMinOrderDialog] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
   const { addToCart, checkMinimumOrder } = useCart();
   const { toast } = useToast();
@@ -142,6 +144,9 @@ export default function Products() {
       </section>
 
       <div className="container mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Main Content */}
+          <div className="flex-1">
         {/* Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-3 mb-8">
           {tabs.map((tab) => (
@@ -197,7 +202,15 @@ export default function Products() {
 
           {/* Product Rows */}
           {filteredProducts.map((product) => (
-            <Card key={product.product_code} className="overflow-hidden hover:shadow-celebration transition-all duration-300">
+            <Card 
+              key={product.product_code} 
+              className={`overflow-hidden hover:shadow-celebration transition-all duration-300 cursor-pointer ${
+                selectedProduct?.product_code === product.product_code 
+                  ? 'ring-2 ring-brand-orange shadow-celebration' 
+                  : ''
+              }`}
+              onClick={() => setSelectedProduct(product)}
+            >
               {/* Desktop Layout */}
               <div className="hidden lg:grid lg:grid-cols-12 gap-4 p-4 items-center">
                 <div className="col-span-1">
@@ -396,8 +409,15 @@ export default function Products() {
                 Continue Shopping
               </AlertDialogAction>
             </AlertDialogFooter>
-          </AlertDialogContent>
+            </AlertDialogContent>
         </AlertDialog>
+          </div>
+
+          {/* Sticky Product Description */}
+          <div className="w-80 flex-shrink-0 hidden lg:block">
+            <StickyProductDescription selectedProduct={selectedProduct} />
+          </div>
+        </div>
       </div>
       <Footer />
       <EnhancedCartButton />

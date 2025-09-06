@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { EnhancedCartButton } from "@/components/EnhancedCartButton";
+import { StickyProductDescription } from "@/components/StickyProductDescription";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ const PriceList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { fetchProducts } = useSupabase();
@@ -119,6 +121,9 @@ const PriceList = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Main Content */}
+          <div className="flex-1">
         {/* Hero Section with Image */}
         <div className="bg-gradient-festive text-white rounded-2xl p-8 mb-8">
           <div className="flex flex-col lg:flex-row items-center gap-8">
@@ -173,7 +178,15 @@ const PriceList = () => {
                 const amount = (parseInt(quantities[item.product_code] || "1") * item.final_rate);
             
                 return (
-                  <Card key={item.product_code} className="p-4">
+                  <Card 
+                    key={item.product_code} 
+                    className={`p-4 cursor-pointer transition-all duration-300 ${
+                      selectedProduct?.product_code === item.product_code 
+                        ? 'ring-2 ring-brand-orange shadow-lg' 
+                        : ''
+                    }`}
+                    onClick={() => setSelectedProduct(item)}
+                  >
                     <div className="flex gap-4">
                       {/* Image & Video */}
                       <div className="flex-shrink-0">
@@ -257,7 +270,15 @@ const PriceList = () => {
                       const amount = (parseInt(quantities[item.product_code] || "1") * item.final_rate);
                   
                       return (
-                        <tr key={item.product_code} className="border-b hover:bg-gray-50">
+                        <tr 
+                          key={item.product_code} 
+                          className={`border-b hover:bg-gray-50 cursor-pointer transition-all duration-300 ${
+                            selectedProduct?.product_code === item.product_code 
+                              ? 'bg-brand-orange/10 border-brand-orange' 
+                              : ''
+                          }`}
+                          onClick={() => setSelectedProduct(item)}
+                        >
                           <td className="p-3">
                             <img src={item.image_url || helloCrackersBranded} alt={item.product_name} className="w-12 h-12 object-cover rounded" />
                           </td>
@@ -341,6 +362,13 @@ const PriceList = () => {
             </div>
           </div>
         </Card>
+          </div>
+
+          {/* Sticky Product Description */}
+          <div className="w-80 flex-shrink-0 hidden lg:block">
+            <StickyProductDescription selectedProduct={selectedProduct} />
+          </div>
+        </div>
       </main>
 
       <Footer />

@@ -4,6 +4,44 @@ import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useSupabase, Category } from "@/hooks/useSupabase";
+
+// Categories Footer Component
+const CategoriesFooterList = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const { fetchCategories } = useSupabase();
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const data = await fetchCategories();
+      const activeCategories = data.filter(cat => cat.status === 'active').slice(0, 6);
+      setCategories(activeCategories);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      {categories.map((category) => (
+        <Link 
+          key={category.id} 
+          to={`/products?category=${encodeURIComponent(category.name)}`} 
+          className="block text-gray-300 hover:text-brand-orange transition-colors"
+        >
+          {category.name}
+        </Link>
+      ))}
+      {categories.length === 0 && (
+        <p className="text-gray-400 text-sm">Loading categories...</p>
+      )}
+    </div>
+  );
+};
 
 export const Footer = () => {
   const [siteSettings, setSiteSettings] = useState<Record<string, string>>({});
@@ -76,7 +114,7 @@ export const Footer = () => {
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
           {/* Company Info */}
           <div className="md:col-span-2">
             <h3 className="text-2xl font-bold mb-4 text-brand-gold">
@@ -121,6 +159,12 @@ export const Footer = () => {
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Product Categories</h4>
+            <CategoriesFooterList />
           </div>
 
           {/* Quick Links */}
