@@ -70,10 +70,10 @@ export const HeroSection = () => {
           is_active: settingsMap.countdown_is_active !== 'false'
         });
       } else {
-        // Default to Diwali 2026 if no settings found
-        const defaultDate = "2026-11-01";
+        // Default to Diwali 2025 if no settings found
+        const defaultDate = "2025-10-20";
         setCountdownSettings({
-          title: "Diwali 2026 Sale Ends In:",
+          title: "Diwali 2025 Sale Ends In:",
           target_date: defaultDate,
           is_active: true
         });
@@ -81,9 +81,9 @@ export const HeroSection = () => {
     } catch (error) {
       console.error('Error loading countdown settings:', error);
       // Fallback to default date
-      const defaultDate = "2026-11-01";
+      const defaultDate = "2025-10-20";
       setCountdownSettings({
-        title: "Diwali 2026 Sale Ends In:",
+        title: "Diwali 2025 Sale Ends In:",
         target_date: defaultDate,
         is_active: true
       });
@@ -141,14 +141,6 @@ export const HeroSection = () => {
                 onClick={() => navigate('/products')}
               >
                 Shop Now - 90% OFF
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="border-white text-white hover:bg-white hover:text-brand-red"
-                onClick={() => navigate('/products')}
-              >
-                View Celebration
               </Button>
               <Button 
                 variant="outline" 

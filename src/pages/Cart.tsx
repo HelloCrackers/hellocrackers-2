@@ -197,15 +197,11 @@ export default function Cart() {
 
               <div className="grid grid-cols-1 gap-3">
                 <Button
-                  variant="outline"
-                  onClick={() => {
-                    clearCart();
-                    navigate('/');
-                    setTimeout(() => navigate('/products'), 100);
-                  }}
-                  className="w-full border-red-500 text-red-500 hover:bg-red-50"
+                  onClick={handleCheckout}
+                  className="w-full bg-gradient-festive text-white font-semibold py-3"
+                  disabled={cart.length === 0}
                 >
-                  Cancel
+                  Checkout
                 </Button>
                 
                 <Button
@@ -217,11 +213,15 @@ export default function Cart() {
                 </Button>
                 
                 <Button
-                  onClick={handleCheckout}
-                  className="w-full bg-gradient-festive text-white font-semibold py-3"
-                  disabled={cart.length === 0}
+                  variant="outline"
+                  onClick={() => {
+                    clearCart();
+                    navigate('/');
+                    setTimeout(() => navigate('/products'), 100);
+                  }}
+                  className="w-full border-red-500 text-red-500 hover:bg-red-50"
                 >
-                  Checkout
+                  Cancel
                 </Button>
               </div>
             </Card>

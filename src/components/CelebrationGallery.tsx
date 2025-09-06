@@ -144,7 +144,8 @@ export const CelebrationGallery = () => {
           )}
           
           <Button 
-            size="lg" 
+            size="lg"
+            onClick={() => window.location.href = '/products'}
             className="bg-gradient-to-r from-brand-red to-brand-orange hover:from-brand-orange hover:to-brand-red text-white font-bold px-8 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
           >
             View More Celebrations

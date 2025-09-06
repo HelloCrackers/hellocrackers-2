@@ -106,10 +106,10 @@ export const GiftBoxSection = () => {
                 <p className="text-muted-foreground mb-4">{box.description}</p>
 
                 {/* Price */}
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl font-bold text-brand-red">₹{box.final_rate.toLocaleString()}</span>
-                  <span className="text-lg text-muted-foreground line-through">₹{box.original_price.toLocaleString()}</span>
-                  <Badge variant="outline" className="text-green-600 border-green-600">
+                <div className="flex items-center gap-3 mb-4 p-3 rounded-lg" style={{ backgroundColor: '#FFA94D' }}>
+                  <span className="text-3xl font-bold" style={{ color: '#8B0000' }}>₹{box.final_rate.toLocaleString()}</span>
+                  <span className="text-lg line-through" style={{ color: '#8B0000', opacity: 0.7 }}>₹{box.original_price.toLocaleString()}</span>
+                  <Badge variant="outline" className="border-red-800 text-red-800 bg-white">
                     {box.discount}% OFF
                   </Badge>
                 </div>
